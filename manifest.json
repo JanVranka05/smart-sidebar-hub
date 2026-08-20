@@ -1,15 +1,32 @@
 {
   "manifest_version": 3,
   "name": "Sidebar Hub",
-  "version": "1.0.0",
-  "description": "A quick-access sidebar for downloads, pinned links, translation, notes, recently closed tabs, and a tab switcher.",
-  "permissions": ["downloads", "storage", "tabs", "tabGroups", "sessions", "scripting", "sidePanel"],
-  "host_permissions": ["http://*/*", "https://*/*"],
+  "version": "1.5.8",
+  "description": "A quick-access sidebar for open tabs, downloads, pinned links, translation, notes, recently closed tabs, clipboard history, and quick access favorites.",
+  "permissions": ["downloads", "storage", "tabs", "tabGroups", "sessions", "scripting", "sidePanel", "clipboardWrite"],
+  "host_permissions": ["http://*/*", "https://*/*", "<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content/clipboard-capture.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
   "action": {
     "default_title": "Open Sidebar Hub"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+U",
+        "mac": "Command+Shift+U"
+      },
+      "description": "Open Sidebar Hub"
+    }
   },
   "side_panel": {
     "default_path": "sidepanel/sidepanel.html"

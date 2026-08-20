@@ -1,3 +1,21 @@
+export const PANEL_LABELS = {
+  tabs: "Open Tabs",
+  downloads: "Downloads",
+  pins: "Pins",
+  translate: "Translate",
+  notes: "Notes",
+  closed: "Recently Closed",
+  clipboard: "Clipboard History",
+};
+
+export const QUICK_ACTION_LABELS = {
+  tidy: "Tidy tabs",
+  collapse: "Collapse/expand groups",
+  screenshot: "Screenshot current tab",
+  pauseall: "Pause all playing media",
+  copyurls: "Copy all tab URLs",
+};
+
 export function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;

@@ -11,6 +11,10 @@ function basename(path) {
   return path.split(/[\\/]/).pop() || path;
 }
 
+function toFileUrl(path) {
+  return "file://" + path.split("/").map(encodeURIComponent).join("/");
+}
+
 function matches(item) {
   if (!query) return true;
   const q = query.toLowerCase();
@@ -32,6 +36,15 @@ function render() {
   for (const item of filtered) {
     const row = el("li", "row");
     row.title = item.filename;
+
+    if (item.state === "complete") {
+      row.draggable = true;
+      row.addEventListener("dragstart", (e) => {
+        const mime = item.mime || "application/octet-stream";
+        e.dataTransfer.effectAllowed = "copy";
+        e.dataTransfer.setData("DownloadURL", `${mime}:${basename(item.filename)}:${toFileUrl(item.filename)}`);
+      });
+    }
 
     const icon = el("span", "row-icon", "📄");
     icon.style.display = "flex";

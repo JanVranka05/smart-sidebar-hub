@@ -6,20 +6,44 @@
   <link rel="stylesheet" href="sidepanel.css" />
 </head>
 <body>
+  <div id="quickaccess-widget" class="quickaccess"></div>
+
+  <div id="nowplaying-widget" class="now-playing"></div>
+
+  <div class="quickbar" id="quickbar">
+    <button id="qa-tidy" class="btn-icon" data-tooltip="Tidy: group tabs by site, groups left / individuals right" aria-label="Tidy tabs">🧹</button>
+    <button id="qa-collapse" class="btn-icon" data-tooltip="Collapse/expand all tab groups" aria-label="Collapse/expand all tab groups">🗂️</button>
+    <button id="qa-screenshot" class="btn-icon" data-tooltip="Screenshot current tab (not available on chrome:// pages)" aria-label="Screenshot current tab">📷</button>
+    <button id="qa-pauseall" class="btn-icon" data-tooltip="Pause all playing media" aria-label="Pause all playing media">⏸️</button>
+    <button id="qa-copyurls" class="btn-icon" data-tooltip="Copy all tab URLs" aria-label="Copy all tab URLs">📋</button>
+  </div>
+
   <nav class="tabbar" id="tabbar">
-    <button class="tabbtn" data-panel="downloads" title="Downloads">⬇️</button>
-    <button class="tabbtn" data-panel="pins" title="Pins">📌</button>
-    <button class="tabbtn" data-panel="translate" title="Translate">🌐</button>
-    <button class="tabbtn" data-panel="notes" title="Notes">📝</button>
-    <button class="tabbtn" data-panel="closed" title="Recently Closed">🕘</button>
-    <button class="tabbtn" data-panel="group" title="Group Tabs">🗂️</button>
+    <button class="tabbtn" data-panel="tabs" data-tooltip="Open Tabs" aria-label="Open Tabs">📑</button>
+    <button class="tabbtn" data-panel="downloads" data-tooltip="Downloads" aria-label="Downloads">⬇️</button>
+    <button class="tabbtn" data-panel="pins" data-tooltip="Pins" aria-label="Pins">📌</button>
+    <button class="tabbtn" data-panel="translate" data-tooltip="Translate" aria-label="Translate">🌐</button>
+    <button class="tabbtn" data-panel="notes" data-tooltip="Notes" aria-label="Notes">📝</button>
+    <button class="tabbtn" data-panel="closed" data-tooltip="Recently Closed" aria-label="Recently Closed">🕘</button>
+    <button class="tabbtn" data-panel="clipboard" data-tooltip="Clipboard History" aria-label="Clipboard History">📋</button>
   </nav>
 
   <main class="content">
+    <section id="panel-tabs" class="panel">
+      <header class="panel-header">
+        <input type="search" id="tabs-search" placeholder="Search open tabs…" />
+      </header>
+      <div class="panel-header">
+        <button id="tabs-group" class="btn-icon" data-tooltip="Group tabs by site" aria-label="Group tabs by site">🗂️ Group by site</button>
+        <button id="tabs-ungroup" class="btn-icon" data-tooltip="Ungroup all" aria-label="Ungroup all">↩️</button>
+      </div>
+      <ul id="tabs-list" class="list"></ul>
+    </section>
+
     <section id="panel-downloads" class="panel">
       <header class="panel-header">
         <input type="search" id="downloads-search" placeholder="Search downloads…" />
-        <button id="downloads-clear" class="btn-icon" title="Clear all history">🗑️</button>
+        <button id="downloads-clear" class="btn-icon" data-tooltip="Clear all history" aria-label="Clear all history">🗑️</button>
       </header>
       <ul id="downloads-list" class="list"></ul>
     </section>
@@ -34,7 +58,7 @@
     <section id="panel-translate" class="panel">
       <header class="panel-header">
         <select id="translate-lang"></select>
-        <button id="translate-getselection" class="btn-icon" title="Get selected text from page">📋</button>
+        <button id="translate-getselection" class="btn-icon" data-tooltip="Get selected text from page" aria-label="Get selected text from page">📋</button>
       </header>
       <textarea id="translate-text" placeholder="Type or paste text, or grab the page selection…"></textarea>
       <button id="translate-go" class="btn-primary">Translate →</button>
@@ -47,19 +71,82 @@
     <section id="panel-closed" class="panel">
       <header class="panel-header">
         <span class="panel-title">Recently closed</span>
-        <button id="closed-refresh" class="btn-icon" title="Refresh">🔄</button>
+        <button id="closed-refresh" class="btn-icon" data-tooltip="Refresh" aria-label="Refresh">🔄</button>
       </header>
       <ul id="closed-list" class="list"></ul>
     </section>
 
-    <section id="panel-group" class="panel">
+    <section id="panel-clipboard" class="panel">
       <header class="panel-header">
-        <button id="group-run" class="btn-primary">🗂️ Group tabs by site</button>
-        <button id="group-undo" class="btn-icon" title="Ungroup all">↩️</button>
+        <span class="panel-title">Clipboard history</span>
+        <button id="clipboard-clear" class="btn-icon" data-tooltip="Clear history" aria-label="Clear history">🗑️</button>
       </header>
-      <ul id="group-list" class="list"></ul>
+      <ul id="clipboard-list" class="list"></ul>
+    </section>
+
+    <section id="panel-settings" class="panel panel-scroll">
+      <div class="panel-title">Sections</div>
+      <ul id="settings-sections" class="toggle-list"></ul>
+
+      <div class="panel-title">Quick actions</div>
+      <ul id="settings-actions" class="toggle-list"></ul>
+
+      <div class="panel-title">Quick access (2 slots)</div>
+      <ul id="settings-quickaccess" class="toggle-list"></ul>
+
+      <div class="panel-title">Theme</div>
+      <div class="settings-links">
+        <select id="settings-theme">
+          <option value="auto">Auto (match system)</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+
+      <div class="panel-title">Screenshot</div>
+      <div class="settings-links">
+        <label class="settings-field">
+          Save location:
+          <select id="settings-screenshot-mode">
+            <option value="downloads">Downloads subfolder</option>
+            <option value="custom">Custom folder (chosen once, no popups)</option>
+          </select>
+        </label>
+
+        <label class="settings-field" id="settings-screenshot-downloads-opts">
+          Subfolder name (inside Downloads):
+          <input type="text" id="settings-screenshot-folder" placeholder="screenshots" />
+        </label>
+
+        <div id="settings-screenshot-custom-opts" style="display: none;">
+          <button id="settings-screenshot-choose" class="btn-icon" style="align-self: flex-start;">📁 Choose folder…</button>
+          <span class="row-sub" id="settings-screenshot-custom-label">No folder chosen yet</span>
+        </div>
+      </div>
+
+      <div class="panel-title">Appearance</div>
+      <div class="settings-links">
+        <button id="settings-appearance" class="btn-icon" style="align-self: flex-start;">
+          Open chrome://settings/appearance
+        </button>
+        <span class="row-sub">Move the side panel left/right or change tab layout — controlled by Chrome, not this extension.</span>
+      </div>
+
+      <div class="panel-title">Links</div>
+      <div class="settings-links">
+        <a href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener">GitHub repo</a>
+        <a href="https://github.com/JanVranka05/smart-sidebar-hub/releases" target="_blank" rel="noopener">Releases / changelog</a>
+        <a href="https://github.com/JanVranka05/smart-sidebar-hub/issues/new" target="_blank" rel="noopener">Report an issue</a>
+      </div>
+
+      <div class="settings-version" id="settings-version"></div>
     </section>
   </main>
+
+  <footer class="bottombar" id="bottombar">
+    <button id="footer-settings" class="btn-icon" data-tooltip="Settings" aria-label="Settings">⚙️</button>
+    <button id="footer-theme" class="btn-icon" data-tooltip="Theme: auto (click to change)" aria-label="Toggle theme">🌓</button>
+  </footer>
 
   <script type="module" src="main.js"></script>
 </body>

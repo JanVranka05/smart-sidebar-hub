@@ -1,21 +1,39 @@
 # Smart Sidebar Hub
 
-A quick-access Chrome sidebar for downloads, pinned links, translation, notes, recently closed tabs, and grouping open tabs by site.
+A quick-access Chrome sidebar for open tabs, downloads, pinned links, translation, notes, recently closed tabs, clipboard history, and quick-access favorites.
 
 ## 📦 Download
 
-[**Download Smart Sidebar Hub v1.0.0**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
+[**Download Smart Sidebar Hub v1.5.8**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
 
 The zip contains the ready-to-load extension folder — no build step needed.
 
 ## Features
 
-- **Downloads** — quick view of recent downloads
+- **Open tabs** — full list of every open tab, nested under their tab group (or a Pinned header), with search
+- **Group tabs by site** — organize open tabs into Chrome's native tab groups (Gmail, Drive, Sheets, GitHub, YouTube, etc.), right from the Open Tabs panel
+- **Downloads** — search, open, show in folder, and drag completed downloads straight out to the desktop
 - **Pinned links** — save and jump to your go-to pages
-- **Translate** — translate page content on the fly
-- **Notes** — jot things down without leaving the tab
-- **Recently closed** — reopen tabs you just closed
-- **Group tabs by site** — organize open tabs into Chrome's native tab groups (Gmail, Drive, GitHub, YouTube, etc.)
+- **Translate** — grab the page selection and open it in Google Translate
+- **Notes** — a persistent scratchpad, auto-saved as you type
+- **Recently closed** — restore closed tabs/windows with one click
+- **Clipboard history** — anything you copy on any page shows up here, click to re-copy it
+- **Now Playing widget** — always-visible, shows whichever tab is (or was recently) playing audio, with pause and mute controls
+- **Quick Access** — 2 pinned shortcut chips (Arc-style) for instant access to your two most-used pages
+- **Quick Actions bar** — Tidy tabs (group + reorder), collapse/expand groups, screenshot the current tab, pause all playing media, copy all tab URLs — each individually toggleable
+- **Settings panel** — show/hide any section or quick action, pick your screenshot save location (including any folder on disk, not just Downloads), and switch themes
+
+## Keyboard shortcut
+
+Open the sidebar with **Ctrl+Shift+U** (**Cmd+Shift+U** on Mac). Rebind it anytime at `chrome://extensions/shortcuts`.
+
+## Theme
+
+Toggle Light/Dark from the footer bar, or pick Auto/Light/Dark explicitly in Settings.
+
+## Move the sidebar to the left
+
+Chrome controls side panel position globally (not per-extension): `chrome://settings/appearance` → **Side panel** → choose left or right.
 
 ## Installation
 
@@ -37,8 +55,9 @@ New versions are published on the [Releases page](https://github.com/JanVranka05
 The extension is plain HTML/CSS/JS, no build step required.
 
 - `manifest.json` — extension manifest (Manifest V3)
-- `background.js` — service worker
-- `sidepanel/` — side panel UI and feature scripts (downloads, pins, notes, translate, tab grouping, recently closed)
+- `background.js` — service worker (handles clipboard capture messages)
+- `content/` — content script that captures text you copy on any page
+- `sidepanel/` — side panel UI and all feature scripts
 - `icons/` — extension icons
 
 Reload the extension from `chrome://extensions` after making changes.
