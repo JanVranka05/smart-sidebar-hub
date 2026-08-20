@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Sidebar Hub",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "A quick-access sidebar for open tabs, downloads, pinned links, translation, notes, recently closed tabs, clipboard history, quick access favorites, and Spotify control.",
   "permissions": ["downloads", "storage", "tabs", "tabGroups", "sessions", "scripting", "sidePanel", "clipboardWrite", "identity"],
   "host_permissions": ["http://*/*", "https://*/*", "<all_urls>"],
@@ -22,8 +22,8 @@
   "commands": {
     "_execute_action": {
       "suggested_key": {
-        "default": "Ctrl+Shift+U",
-        "mac": "Command+Shift+U"
+        "default": "Alt+S",
+        "mac": "Alt+S"
       },
       "description": "Open Sidebar Hub"
     }

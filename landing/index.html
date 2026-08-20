@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sidebar Hub</title>
+<meta name="description" content="A Chrome sidebar that gathers open tabs, downloads, pins, notes, clipboard history, translation, and Spotify into one panel.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sidebar Hub">
+<meta property="og:description" content="A Chrome sidebar that gathers open tabs, downloads, pins, notes, clipboard history, translation, and Spotify into one panel.">
+<meta property="og:url" content="https://sidebarhub.com/">
+<meta property="og:image" content="https://sidebarhub.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sidebar Hub">
+<meta name="twitter:description" content="A Chrome sidebar that gathers open tabs, downloads, pins, notes, clipboard history, translation, and Spotify into one panel.">
+<meta name="twitter:image" content="https://sidebarhub.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #faf8fc;
+    --bg-raised: #f1ecfa;
+    --bg-panel: #ffffff;
+    --ink: #171420;
+    --ink-dim: #6e6680;
+    --ink-faint: #a29ab4;
+    --accent: #4f46e5;
+    --accent-ink: #ffffff;
+    --accent-soft: #e7e4fb;
+    --border: #e3ddf0;
+    --border-soft: #ece7f7;
+    --danger: #d92d20;
+    --shadow: 0 24px 60px -24px rgba(30, 20, 60, 0.28);
+    --shadow-sm: 0 10px 24px -14px rgba(30, 20, 60, 0.22);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #120f18;
+      --bg-raised: #1c1826;
+      --bg-panel: #191521;
+      --ink: #f1eefa;
+      --ink-dim: #a79fb8;
+      --ink-faint: #6e6680;
+      --accent: #8078f2;
+      --accent-ink: #100c1a;
+      --accent-soft: #262048;
+      --border: #2c2638;
+      --border-soft: #241f30;
+      --danger: #f87171;
+      --shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+      --shadow-sm: 0 10px 24px -14px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #120f18;
+    --bg-raised: #1c1826;
+    --bg-panel: #191521;
+    --ink: #f1eefa;
+    --ink-dim: #a79fb8;
+    --ink-faint: #6e6680;
+    --accent: #8078f2;
+    --accent-ink: #100c1a;
+    --accent-soft: #262048;
+    --border: #2c2638;
+    --border-soft: #241f30;
+    --danger: #f87171;
+    --shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 10px 24px -14px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "Manrope", sans-serif; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  a { color: inherit; }
+
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  .icon { display: inline-flex; flex-shrink: 0; }
+  .icon svg { display: block; }
+
+  /* ---------- brand mark ---------- */
+  .mark { display: inline-flex; flex-shrink: 0; }
+
+  /* ---------- rail (in-page nav mirroring the product's own tabbar) ---------- */
+  .rail {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px 0;
+    gap: 4px;
+    background: var(--bg-raised);
+    border-right: 1px solid var(--border);
+    z-index: 40;
+  }
+  .rail-logo { margin-bottom: 14px; }
+  .rail-spacer { flex: 1; }
+  .rail-btn {
+    width: 44px; height: 44px;
+    border-radius: 11px;
+    border: 1px solid transparent;
+    background: none;
+    color: var(--ink-dim);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .rail-btn:hover { background: var(--bg-panel); color: var(--ink); border-color: var(--border); }
+  .rail-btn.active { background: var(--accent-soft); color: var(--accent); }
+  .rail-btn svg { width: 18px; height: 18px; }
+
+  @media (max-width: 980px) {
+    .rail { display: none; }
+    body { --rail-w: 0px; }
+  }
+  body { --rail-w: 72px; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 30;
+    margin-left: var(--rail-w);
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px clamp(20px, 4vw, 48px);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .topbar .name { font-weight: 700; font-size: 15px; }
+  .topbar .ver { font-size: 11px; color: var(--ink-faint); padding: 2px 7px; border: 1px solid var(--border); border-radius: 99px; }
+  .theme-toggle {
+    width: 30px; height: 30px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg-panel); color: var(--ink-dim);
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 15px; height: 15px; }
+  .topbar-spacer { flex: 1; }
+  .topbar-links { display: flex; align-items: center; gap: 18px; }
+  .topbar-links a { font-size: 13.5px; color: var(--ink-dim); text-decoration: none; }
+  .topbar-links a:hover { color: var(--ink); }
+  @media (max-width: 640px) { .topbar-links a.hide-sm { display: none; } }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-size: 14.5px; font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: filter .15s ease, background .15s ease, transform .1s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { background: var(--bg-panel); color: var(--ink); border-color: var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); }
+  .btn-sm { padding: 7px 12px; font-size: 13px; }
+
+  /* ---------- layout shell ---------- */
+  main { margin-left: var(--rail-w); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); }
+
+  section { padding: 96px 0; border-bottom: 1px solid var(--border-soft); }
+  section:last-of-type { border-bottom: none; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .eyebrow .icon svg { width: 14px; height: 14px; }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in-view { opacity: 1; transform: none; }
+
+  /* ---------- hero ---------- */
+  .hero { padding-top: 64px; }
+  .hero-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .hero h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 700; max-width: 16ch; }
+  .hero .lede { font-size: 1.15rem; color: var(--ink-dim); max-width: 52ch; margin-top: 20px; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .hero-note { margin-top: 16px; font-size: 13px; color: var(--ink-faint); }
+  .hero-note .mono { color: var(--ink-dim); }
+
+  .stat-row { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 48px; }
+  .stat b { display: block; font-family: "Bricolage Grotesque"; font-size: 1.7rem; font-weight: 700; }
+  .stat span { font-size: 12.5px; color: var(--ink-faint); }
+
+  .hero-stage { margin-top: 56px; }
+
+  /* ---------- browser chrome mockup ---------- */
+  .browser-frame {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .browser-titlebar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+  }
+  .tl-dots { display: flex; gap: 6px; margin-right: 4px; }
+  .tl-dots span { width: 9px; height: 9px; border-radius: 50%; background: var(--border); }
+  .tl-nav { display: flex; gap: 6px; color: var(--ink-faint); }
+  .tl-nav svg { width: 14px; height: 14px; }
+  .tl-url {
+    flex: 1;
+    display: flex; align-items: center; gap: 7px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 6px 12px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  .tl-url svg { width: 12px; height: 12px; color: var(--ink-faint); }
+  .tl-ext {
+    width: 26px; height: 26px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+  }
+  .tl-ext .mark svg { width: 15px; height: 15px; }
+
+  .browser-body { display: flex; min-height: 420px; }
+  .page-mock {
+    flex: 1;
+    padding: 26px;
+    background:
+      radial-gradient(560px 260px at 15% 0%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
+      var(--bg);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .pm-bar { height: 34px; border-radius: 8px; background: var(--bg-panel); border: 1px solid var(--border-soft); width: 46%; }
+  .pm-line { height: 11px; border-radius: 5px; background: var(--border-soft); }
+  .pm-line.w1 { width: 92%; } .pm-line.w2 { width: 78%; } .pm-line.w3 { width: 85%; } .pm-line.w4 { width: 60%; }
+  .pm-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
+  .pm-card { height: 96px; border-radius: 10px; background: var(--bg-panel); border: 1px solid var(--border-soft); }
+
+  /* ---------- sidepanel replica ---------- */
+  .sp {
+    width: 300px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    background: var(--bg-panel);
+    display: flex; flex-direction: column;
+    font-size: 12.5px;
+  }
+  .sp * { box-sizing: border-box; }
+
+  .sp-qa { display: flex; gap: 6px; padding: 8px; border-bottom: 1px solid var(--border-soft); }
+  .sp-chip {
+    flex: 1; display: flex; align-items: center; gap: 6px;
+    padding: 6px 8px; border-radius: 8px;
+    background: var(--bg-raised); border: 1px solid var(--border-soft);
+    font-size: 11.5px; color: var(--ink-dim); overflow: hidden;
+  }
+  .sp-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .sp-chip span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .sp-now {
+    margin: 8px; padding: 8px; border-radius: 10px;
+    background: var(--accent-soft);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sp-now .art { width: 30px; height: 30px; border-radius: 6px; background: var(--accent); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--accent-ink); }
+  .sp-now .art svg { width: 14px; height: 14px; }
+  .sp-now .meta { flex: 1; min-width: 0; }
+  .sp-now .meta b { display: block; font-size: 11.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sp-now .meta small { color: var(--ink-dim); font-size: 10.5px; }
+  .sp-now .bar { height: 3px; border-radius: 3px; background: var(--border); margin-top: 5px; overflow: hidden; }
+  .sp-now .bar i { display: block; height: 100%; width: 62%; background: var(--accent); }
+  .sp-now .ctl { display: flex; gap: 4px; color: var(--ink-dim); }
+  .sp-now .ctl svg { width: 13px; height: 13px; }
+
+  .sp-quickbar, .sp-tabbar, .sp-bottombar { display: flex; border-bottom: 1px solid var(--border-soft); background: var(--bg-raised); }
+  .sp-quickbar { gap: 4px; padding: 6px 7px; }
+  .sp-quickbar .qb { flex: 1; display: flex; align-items: center; justify-content: center; padding: 6px 0; border-radius: 7px; border: 1px solid var(--border-soft); background: var(--bg-panel); color: var(--ink-dim); }
+  .sp-quickbar .qb svg { width: 13px; height: 13px; }
+
+  .sp-tabbar { }
+  .sp-tabbar .tb { flex: 1; display: flex; align-items: center; justify-content: center; padding: 9px 0; color: var(--ink-faint); border-bottom: 2px solid transparent; }
+  .sp-tabbar .tb svg { width: 14px; height: 14px; }
+  .sp-tabbar .tb.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .sp-content { flex: 1; padding: 9px; display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+  .sp-search { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; background: var(--bg-raised); border: 1px solid var(--border-soft); color: var(--ink-faint); font-size: 11.5px; }
+  .sp-search svg { width: 12px; height: 12px; }
+  .sp-toolrow { display: flex; gap: 6px; }
+  .sp-toolrow .tr-btn { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 7px; background: var(--bg-raised); border: 1px solid var(--border-soft); color: var(--ink-dim); font-size: 11px; }
+  .sp-toolrow .tr-btn svg { width: 11px; height: 11px; }
+
+  .sp-group-head { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--accent); padding: 4px 2px 2px; display: flex; align-items: center; gap: 6px; }
+  .sp-group-head i { width: 7px; height: 7px; border-radius: 2px; background: var(--accent); }
+  .sp-row { display: flex; align-items: center; gap: 8px; padding: 6px 6px; border-radius: 7px; }
+  .sp-row:hover { background: var(--bg-raised); }
+  .sp-row .fav { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+  .sp-row .tt { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+  .sp-row .sub { color: var(--ink-faint); font-size: 10.5px; }
+  .sp-row.indent { padding-left: 20px; }
+
+  .sp-bottombar { gap: 4px; padding: 6px 7px; border-bottom: none; border-top: 1px solid var(--border-soft); margin-top: auto; }
+  .sp-bottombar .bb { flex: 1; display: flex; align-items: center; justify-content: center; padding: 6px 0; border-radius: 7px; border: 1px solid var(--border-soft); background: var(--bg-panel); color: var(--ink-dim); }
+  .sp-bottombar .bb svg { width: 13px; height: 13px; }
+
+  /* ---------- feature sections ---------- */
+  .feat { display: grid; grid-template-columns: 1fr; gap: 44px; align-items: center; }
+  @media (min-width: 900px) {
+    .feat { grid-template-columns: 1fr 1fr; gap: 60px; }
+    .feat.rev .feat-copy { order: 2; }
+    .feat.rev .feat-shot { order: 1; }
+  }
+  .feat-copy h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); }
+  .feat-copy p.body { color: var(--ink-dim); margin-top: 16px; font-size: 1.02rem; max-width: 46ch; }
+  .feat-list { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .feat-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; color: var(--ink-dim); }
+  .feat-list li .icon { color: var(--accent); margin-top: 2px; }
+  .feat-list li .icon svg { width: 15px; height: 15px; }
+  .feat-list b { color: var(--ink); font-weight: 700; }
+
+  .shot {
+    position: relative;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 14px;
+  }
+  .shot-label {
+    position: absolute; top: -11px; left: 16px;
+    background: var(--accent); color: var(--accent-ink);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; font-weight: 600; letter-spacing: .03em;
+    padding: 3px 9px; border-radius: 99px;
+  }
+
+  /* mini panel reused across feature shots */
+  .mini-sp { border: 1px solid var(--border-soft); border-radius: 10px; overflow: hidden; background: var(--bg); }
+
+  /* ---------- shortcut section ---------- */
+  .shortcut-card {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px;
+    background: var(--bg-raised); border: 1px solid var(--border);
+    border-radius: 18px; padding: 40px clamp(24px,4vw,48px);
+  }
+  .keys { display: flex; align-items: center; gap: 8px; }
+  .key {
+    font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 15px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-bottom-width: 3px;
+    border-radius: 8px; padding: 10px 14px; box-shadow: var(--shadow-sm);
+  }
+  .keys .plus { color: var(--ink-faint); font-size: 13px; }
+  .shortcut-copy { max-width: 40ch; }
+  .shortcut-copy h3 { font-size: 1.5rem; }
+  .shortcut-copy p { color: var(--ink-dim); margin-top: 10px; }
+
+  /* ---------- install ---------- */
+  .steps { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 18px; counter-reset: step; }
+  .steps li { counter-increment: step; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative; }
+  .steps li::before {
+    content: counter(step);
+    font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 13px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .steps li p { font-size: 14px; color: var(--ink-dim); }
+  .steps li b { display: block; color: var(--ink); font-size: 14.5px; margin-bottom: 4px; }
+
+  .action-grid { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 18px; }
+  .action-grid li { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .action-grid .icon-badge {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .action-grid .icon-badge svg { width: 13px; height: 13px; }
+  .action-grid li p { font-size: 14px; color: var(--ink-dim); }
+
+  /* ---------- theme demo ---------- */
+  .theme-row { display: flex; gap: 14px; margin-top: 24px; flex-wrap: wrap; }
+  .theme-chip { display: flex; align-items: center; gap: 9px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-panel); font-size: 13.5px; }
+  .theme-chip i { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--border); }
+  .theme-chip i.light { background: #fff; }
+  .theme-chip i.dark { background: #17141f; }
+  .theme-chip i.auto { background: linear-gradient(90deg, #fff 50%, #17141f 50%); }
+
+  /* ---------- footer / final CTA ---------- */
+  .final { text-align: center; }
+  .final h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); max-width: 20ch; margin: 0 auto; }
+  .final p { color: var(--ink-dim); margin: 16px auto 0; max-width: 46ch; }
+  .final .hero-ctas { justify-content: center; margin-top: 28px; }
+
+  footer { margin-left: var(--rail-w); padding: 36px clamp(20px,4vw,48px) 48px; }
+  .foot-row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-soft); padding-top: 24px; }
+  .foot-links { display: flex; gap: 20px; flex-wrap: wrap; }
+  .foot-links a { font-size: 13px; color: var(--ink-dim); text-decoration: none; }
+  .foot-links a:hover { color: var(--ink); }
+  .foot-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-faint); }
+  .foot-license { font-size: 12px; color: var(--ink-faint); margin-top: 18px; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+
+<nav class="rail" aria-label="Section navigation">
+  <a class="rail-logo mark" href="#top" aria-label="Sidebar Hub">
+    <svg width="26" height="26" viewBox="0 0 24 24"><rect width="24" height="24" rx="6.5" fill="var(--accent)"/><rect x="4.5" y="4.5" width="7" height="15" rx="2.2" fill="var(--accent-ink)"/></svg>
+  </a>
+  <button class="rail-btn" data-goto="hero" data-tooltip="Overview" aria-label="Overview"><span class="icon" data-icon="grid"></span></button>
+  <button class="rail-btn" data-goto="tabs" data-tooltip="Tabs" aria-label="Tabs"><span class="icon" data-icon="tabs"></span></button>
+  <button class="rail-btn" data-goto="downloads" data-tooltip="Downloads" aria-label="Downloads"><span class="icon" data-icon="downloads"></span></button>
+  <button class="rail-btn" data-goto="pins" data-tooltip="Pins" aria-label="Pins"><span class="icon" data-icon="pins"></span></button>
+  <button class="rail-btn" data-goto="notes" data-tooltip="Notes &amp; clipboard" aria-label="Notes and clipboard"><span class="icon" data-icon="notes"></span></button>
+  <button class="rail-btn" data-goto="media" data-tooltip="Now playing &amp; Spotify" aria-label="Now playing and Spotify"><span class="icon" data-icon="spotify"></span></button>
+  <button class="rail-btn" data-goto="actions" data-tooltip="Quick actions" aria-label="Quick actions"><span class="icon" data-icon="tidy"></span></button>
+  <button class="rail-btn" data-goto="install" data-tooltip="Install" aria-label="Install"><span class="icon" data-icon="settings"></span></button>
+  <div class="rail-spacer"></div>
+  <a class="rail-btn" href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener" data-tooltip="GitHub" aria-label="GitHub"><span class="icon" data-icon="github"></span></a>
+  <a class="rail-btn" href="https://ko-fi.com/janvranka" target="_blank" rel="noopener" data-tooltip="Support on Ko-fi" aria-label="Support on Ko-fi"><span class="icon" data-icon="heart"></span></a>
+</nav>
+
+<div id="top"></div>
+
+<header class="topbar">
+  <span class="mark">
+    <svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" rx="6.5" fill="var(--accent)"/><rect x="4.5" y="4.5" width="7" height="15" rx="2.2" fill="var(--accent-ink)"/></svg>
+  </span>
+  <span class="name">Sidebar Hub</span>
+  <span class="ver mono">v1.7.1</span>
+  <button class="theme-toggle" id="theme-toggle" type="button" title="Theme: auto (click to change)" aria-label="Toggle theme"><span class="icon" data-icon="theme"></span></button>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-links">
+    <a class="hide-sm" href="#tabs">Features</a>
+    <a class="hide-sm" href="#install">Install</a>
+    <a href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener">GitHub</a>
+    <a class="hide-sm" href="https://ko-fi.com/janvranka" target="_blank" rel="noopener">Ko&#8209;fi</a>
+    <a class="btn btn-primary btn-sm" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener">Download</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="hero">
+    <div class="wrap hero-grid">
+      <div class="eyebrow"><span class="icon" data-icon="bolt"></span> Chrome side panel &middot; Manifest V3</div>
+      <h1>One sidebar. Every tab you opened, closed, downloaded, or copied.</h1>
+      <p class="lede">Sidebar Hub keeps open tabs, downloads, pinned links, notes, clipboard history, translation, and Spotify in a single Chrome side panel - open it with a keystroke, gone just as fast.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener"><span class="icon" data-icon="download"></span> Download v1.7.1</a>
+        <a class="btn btn-ghost" href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener"><span class="icon" data-icon="github"></span> View source</a>
+      </div>
+      <p class="hero-note">No build step, no account, no tracking. Unzip, <span class="mono">Load unpacked</span>, done. &nbsp;·&nbsp; Free for non‑commercial use, CC BY‑NC‑SA 4.0.</p>
+
+      <div class="stat-row reveal">
+        <div class="stat"><b>9</b><span>panels in one hub</span></div>
+        <div class="stat"><b>6</b><span>one‑click quick actions</span></div>
+        <div class="stat"><b>2</b><span>Arc‑style quick access slots</span></div>
+        <div class="stat"><b>0</b><span>build step required</span></div>
+      </div>
+
+      <div class="hero-stage reveal">
+        <div class="browser-frame">
+          <div class="browser-titlebar">
+            <div class="tl-dots"><span></span><span></span><span></span></div>
+            <div class="tl-nav">
+              <span class="icon" data-icon="back"></span>
+              <span class="icon" data-icon="fwd"></span>
+              <span class="icon" data-icon="refresh"></span>
+            </div>
+            <div class="tl-url"><span class="icon" data-icon="lock"></span> your-next-tab.com</div>
+            <div class="tl-ext"><span class="mark"><svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6.5" fill="var(--accent)"/><rect x="4.5" y="4.5" width="7" height="15" rx="2.2" fill="var(--accent-ink)"/></svg></span></div>
+          </div>
+          <div class="browser-body">
+            <div class="page-mock">
+              <div class="pm-bar"></div>
+              <div class="pm-line w1"></div>
+              <div class="pm-line w2"></div>
+              <div class="pm-line w3"></div>
+              <div class="pm-cards"><div class="pm-card"></div><div class="pm-card"></div><div class="pm-card"></div></div>
+              <div class="pm-line w4"></div>
+            </div>
+
+            <!-- sidepanel replica -->
+            <div class="sp">
+              <div class="sp-qa">
+                <div class="sp-chip"><span class="dot"></span><span>Inbox</span></div>
+                <div class="sp-chip"><span class="dot"></span><span>Roadmap doc</span></div>
+              </div>
+              <div class="sp-now">
+                <div class="art"><span class="icon" data-icon="wave"></span></div>
+                <div class="meta"><b>Weekly Standup Playlist</b><small>Now playing · tab 3</small><div class="bar"><i></i></div></div>
+                <div class="ctl"><span class="icon" data-icon="mute"></span><span class="icon" data-icon="pause"></span></div>
+              </div>
+              <div class="sp-quickbar">
+                <div class="qb"><span class="icon" data-icon="tidy"></span></div>
+                <div class="qb"><span class="icon" data-icon="collapse"></span></div>
+                <div class="qb"><span class="icon" data-icon="camera"></span></div>
+                <div class="qb"><span class="icon" data-icon="pauseall"></span></div>
+                <div class="qb"><span class="icon" data-icon="copyurls"></span></div>
+                <div class="qb"><span class="icon" data-icon="freeze"></span></div>
+              </div>
+              <div class="sp-tabbar">
+                <div class="tb active"><span class="icon" data-icon="tabs"></span></div>
+                <div class="tb"><span class="icon" data-icon="downloads"></span></div>
+                <div class="tb"><span class="icon" data-icon="pins"></span></div>
+                <div class="tb"><span class="icon" data-icon="translate"></span></div>
+                <div class="tb"><span class="icon" data-icon="notes"></span></div>
+                <div class="tb"><span class="icon" data-icon="closed"></span></div>
+                <div class="tb"><span class="icon" data-icon="clipboard"></span></div>
+                <div class="tb"><span class="icon" data-icon="spotify"></span></div>
+              </div>
+              <div class="sp-content">
+                <div class="sp-search"><span class="icon" data-icon="search"></span> Search open tabs…</div>
+                <div class="sp-toolrow"><div class="tr-btn"><span class="icon" data-icon="group"></span>Group by site</div></div>
+                <div class="sp-group-head"><i></i> Gmail · 3</div>
+                <div class="sp-row indent"><span class="fav" style="background:#ea4335"></span><span class="tt">Inbox (12) - Q3 renewals</span></div>
+                <div class="sp-row indent"><span class="fav" style="background:#ea4335"></span><span class="tt">Re: Friday deploy window</span></div>
+                <div class="sp-group-head"><i></i> GitHub · 2</div>
+                <div class="sp-row indent"><span class="fav" style="background:#24292f"></span><span class="tt">smart-sidebar-hub - PR #42</span></div>
+                <div class="sp-row"><span class="fav" style="background:var(--accent-soft)"></span><span class="tt">Figma - Sidebar Hub v2 mocks</span><span class="sub">pinned</span></div>
+              </div>
+              <div class="sp-bottombar">
+                <div class="bb"><span class="icon" data-icon="settings"></span></div>
+                <div class="bb"><span class="icon" data-icon="theme"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TABS ================= -->
+  <section id="tabs">
+    <div class="wrap feat">
+      <div class="feat-copy reveal">
+        <div class="eyebrow"><span class="icon" data-icon="tabs"></span> Open tabs</div>
+        <h2>Forty loose tabs, six labeled stacks.</h2>
+        <p class="body">See every open tab nested under its tab group - or a Pinned header - with live search. Group by site turns a scattered window into Chrome‑native tab groups (Gmail, Drive, Sheets, GitHub, YouTube…) without leaving the panel.</p>
+        <ul class="feat-list">
+          <li><span class="icon" data-icon="check"></span><span><b>Group tabs by site</b> - one click sorts open tabs into real Chrome tab groups.</span></li>
+          <li><span class="icon" data-icon="check"></span><span><b>Search as you type</b> across every open tab, grouped or not.</span></li>
+          <li><span class="icon" data-icon="check"></span><span><b>Ungroup all</b> when you want your window flat again.</span></li>
+        </ul>
+      </div>
+      <div class="feat-shot reveal">
+        <div class="shot"><span class="shot-label">TABS PANEL</span>
+          <div class="mini-sp">
+            <div class="sp-content" style="padding:14px;">
+              <div class="sp-search"><span class="icon" data-icon="search"></span> Search open tabs…</div>
+              <div class="sp-toolrow"><div class="tr-btn"><span class="icon" data-icon="group"></span>Group by site</div><div class="tr-btn"><span class="icon" data-icon="ungroup"></span>Ungroup</div></div>
+              <div class="sp-group-head"><i></i> Google Drive · 4</div>
+              <div class="sp-row indent"><span class="fav" style="background:#0f9d58"></span><span class="tt">Q3 budget - Sheet1</span></div>
+              <div class="sp-row indent"><span class="fav" style="background:#0f9d58"></span><span class="tt">Launch checklist</span></div>
+              <div class="sp-row indent"><span class="fav" style="background:#0f9d58"></span><span class="tt">Design review notes</span></div>
+              <div class="sp-group-head"><i></i> YouTube · 2</div>
+              <div class="sp-row indent"><span class="fav" style="background:#ff0000"></span><span class="tt">Chrome extensions in 100 seconds</span></div>
+              <div class="sp-group-head" style="color:var(--ink-faint)"><i style="background:var(--ink-faint)"></i> Ungrouped · 3</div>
+              <div class="sp-row"><span class="fav" style="background:#4285f4"></span><span class="tt">chrome://extensions</span></div>
+              <div class="sp-row"><span class="fav" style="background:var(--ink-faint)"></span><span class="tt">New Tab</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DOWNLOADS ================= -->
+  <section id="downloads">
+    <div class="wrap feat rev">
+      <div class="feat-copy reveal">
+        <div class="eyebrow"><span class="icon" data-icon="downloads"></span> Downloads</div>
+        <h2>Your download history, without the download shelf.</h2>
+        <p class="body">Search, open, or show a file in its folder straight from the sidebar - or drag a completed download out to the desktop like it's already a file on disk.</p>
+        <ul class="feat-list">
+          <li><span class="icon" data-icon="check"></span><span>Drag‑out support - pull a finished download directly onto the desktop.</span></li>
+          <li><span class="icon" data-icon="check"></span><span>Clear history in one click when the list gets long.</span></li>
+        </ul>
+      </div>
+      <div class="feat-shot reveal">
+        <div class="shot"><span class="shot-label">DOWNLOADS PANEL</span>
+          <div class="mini-sp">
+            <div class="sp-content" style="padding:14px;">
+              <div class="sp-search"><span class="icon" data-icon="search"></span> Search downloads…</div>
+              <div class="sp-row"><span class="fav" style="background:#f59e0b;border-radius:4px;"></span><span class="tt">quarterly-report.pdf</span><span class="sub">2.1 MB</span></div>
+              <div class="sp-row"><span class="fav" style="background:#3b82f6;border-radius:4px;"></span><span class="tt">sidebar-hub-v1.7.1.zip</span><span class="sub">340 KB</span></div>
+              <div class="sp-row"><span class="fav" style="background:#22c55e;border-radius:4px;"></span><span class="tt">screenshot-2026-08-19.png</span><span class="sub">880 KB</span></div>
+              <div class="sp-row"><span class="fav" style="background:#a855f7;border-radius:4px;"></span><span class="tt">playlist-export.csv</span><span class="sub">12 KB</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PINS ================= -->
+  <section id="pins">
+    <div class="wrap feat">
+      <div class="feat-copy reveal">
+        <div class="eyebrow"><span class="icon" data-icon="pins"></span> Pins &amp; quick access</div>
+        <h2>Two chips for the pages you never stop opening.</h2>
+        <p class="body">Save your go‑to pages as pins, then promote your top two to Quick Access chips that sit above everything else - Arc‑style, always one tap away, before the panel even loads.</p>
+        <ul class="feat-list">
+          <li><span class="icon" data-icon="check"></span><span><b>Pin current tab</b> in one click from any page.</span></li>
+          <li><span class="icon" data-icon="check"></span><span><b>2 quick‑access slots</b> pinned to the very top of the panel.</span></li>
+        </ul>
+      </div>
+      <div class="feat-shot reveal">
+        <div class="shot"><span class="shot-label">PINS PANEL</span>
+          <div class="mini-sp">
+            <div class="sp-qa" style="border-bottom:1px solid var(--border-soft)">
+              <div class="sp-chip"><span class="dot"></span><span>Inbox</span></div>
+              <div class="sp-chip"><span class="dot"></span><span>Roadmap doc</span></div>
+            </div>
+            <div class="sp-content" style="padding:14px;">
+              <div class="tr-btn" style="align-self:flex-start;background:var(--accent);color:var(--accent-ink);border-color:var(--accent)"><span class="icon" data-icon="pins"></span>Pin current tab</div>
+              <div class="sp-row"><span class="fav" style="background:#ea4335"></span><span class="tt">Gmail</span></div>
+              <div class="sp-row"><span class="fav" style="background:#181717"></span><span class="tt">GitHub - smart-sidebar-hub</span></div>
+              <div class="sp-row"><span class="fav" style="background:#1db954"></span><span class="tt">Spotify Web Player</span></div>
+              <div class="sp-row"><span class="fav" style="background:#f4b400"></span><span class="tt">Google Calendar</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NOTES / CLIPBOARD ================= -->
+  <section id="notes">
+    <div class="wrap feat rev">
+      <div class="feat-copy reveal">
+        <div class="eyebrow"><span class="icon" data-icon="notes"></span> Notes &amp; clipboard</div>
+        <h2>A scratchpad and a memory for everything you copy.</h2>
+        <p class="body">Notes auto‑save as you type, no save button, ever. Clipboard History quietly logs anything you copy on any page - click a past entry to copy it again, even after the tab that made it is long closed.</p>
+        <ul class="feat-list">
+          <li><span class="icon" data-icon="check"></span><span>Persistent scratchpad, synced across sidebar opens.</span></li>
+          <li><span class="icon" data-icon="check"></span><span>Clipboard log with one‑click clear.</span></li>
+        </ul>
+      </div>
+      <div class="feat-shot reveal">
+        <div class="shot"><span class="shot-label">CLIPBOARD PANEL</span>
+          <div class="mini-sp">
+            <div class="sp-content" style="padding:14px;">
+              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">"ship the v1.7.1 zip by Friday"</span></div>
+              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">https://github.com/JanVranka05/smart-sidebar-hub</span></div>
+              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">4f46e5</span></div>
+              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">Ctrl+Alt+S to rebind</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NOW PLAYING / SPOTIFY ================= -->
+  <section id="media">
+    <div class="wrap feat">
+      <div class="feat-copy reveal">
+        <div class="eyebrow"><span class="icon" data-icon="spotify"></span> Now playing &amp; Spotify</div>
+        <h2>Whatever's making noise, always in view.</h2>
+        <p class="body">The Now Playing widget tracks whichever tab is (or was just) playing audio - live progress bar, pause, mute - even after you've switched away. Connect Spotify for full playback control and your playlists, right in the panel.</p>
+        <ul class="feat-list">
+          <li><span class="icon" data-icon="check"></span><span>Always‑visible widget, not buried in a tab list.</span></li>
+          <li><span class="icon" data-icon="check"></span><span>Spotify playlists browsable without opening the app.</span></li>
+        </ul>
+      </div>
+      <div class="feat-shot reveal">
+        <div class="shot"><span class="shot-label">SPOTIFY PANEL</span>
+          <div class="mini-sp">
+            <div class="sp-content" style="padding:14px;gap:12px;">
+              <div class="sp-now" style="margin:0;">
+                <div class="art"><span class="icon" data-icon="wave"></span></div>
+                <div class="meta"><b>Deep Focus</b><small>The Midnight - 2:14 / 3:40</small><div class="bar"><i style="width:58%"></i></div></div>
+              </div>
+              <div style="display:flex;justify-content:center;gap:10px;">
+                <div class="qb" style="flex:none;width:34px;height:34px;border-radius:50%;"><span class="icon" data-icon="prev"></span></div>
+                <div class="qb" style="flex:none;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-ink)"><span class="icon" data-icon="pause"></span></div>
+                <div class="qb" style="flex:none;width:34px;height:34px;border-radius:50%;"><span class="icon" data-icon="next"></span></div>
+              </div>
+              <div class="sp-row"><span class="fav" style="background:#1db954;border-radius:4px"></span><span class="tt">Deep Focus</span></div>
+              <div class="sp-row"><span class="fav" style="background:#1db954;border-radius:4px"></span><span class="tt">Weekly Standup Playlist</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= QUICK ACTIONS ================= -->
+  <section id="actions">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="icon" data-icon="tidy"></span> Quick actions</div>
+      <h2 class="reveal" style="font-size:clamp(1.7rem,3vw,2.3rem); max-width:22ch;">Six actions above the tab list, each one a single click.</h2>
+      <p class="reveal" style="color:var(--ink-dim); max-width:60ch; margin-top:16px; font-size:1.02rem;">Every action is individually toggleable in Settings - keep the two you use, hide the rest.</p>
+
+      <div class="reveal" style="margin-top:40px;">
+        <div class="shot" style="max-width:640px;"><span class="shot-label">QUICK ACTIONS BAR</span>
+          <div class="sp-quickbar" style="border-radius:8px; border:1px solid var(--border-soft);">
+            <div class="qb"><span class="icon" data-icon="tidy"></span></div>
+            <div class="qb"><span class="icon" data-icon="collapse"></span></div>
+            <div class="qb"><span class="icon" data-icon="camera"></span></div>
+            <div class="qb"><span class="icon" data-icon="pauseall"></span></div>
+            <div class="qb"><span class="icon" data-icon="copyurls"></span></div>
+            <div class="qb"><span class="icon" data-icon="freeze"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="action-grid">
+        <li><span class="icon-badge"><span class="icon" data-icon="tidy"></span></span><p><b style="display:inline;color:var(--ink);">Tidy</b> - group tabs by site and reorder in one pass.</p></li>
+        <li><span class="icon-badge"><span class="icon" data-icon="collapse"></span></span><p><b style="display:inline;color:var(--ink);">Collapse</b> - fold or expand every tab group.</p></li>
+        <li><span class="icon-badge"><span class="icon" data-icon="camera"></span></span><p><b style="display:inline;color:var(--ink);">Screenshot</b> - capture the current tab to your chosen folder.</p></li>
+        <li><span class="icon-badge"><span class="icon" data-icon="pauseall"></span></span><p><b style="display:inline;color:var(--ink);">Pause all</b> - mute every tab playing audio, at once.</p></li>
+        <li><span class="icon-badge"><span class="icon" data-icon="copyurls"></span></span><p><b style="display:inline;color:var(--ink);">Copy URLs</b> - every open tab's link, one paste away.</p></li>
+        <li><span class="icon-badge"><span class="icon" data-icon="freeze"></span></span><p><b style="display:inline;color:var(--ink);">Freeze</b> - suspend background tabs and give memory back.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= SHORTCUT ================= -->
+  <section id="shortcut-sec">
+    <div class="wrap">
+      <div class="shortcut-card reveal">
+        <div class="shortcut-copy">
+          <h3>Open it, use it, gone.</h3>
+          <p>One keystroke opens the panel from anywhere. The same keystroke closes it. Rebind it anytime at <span class="mono">chrome://extensions/shortcuts</span>.</p>
+        </div>
+        <div class="keys">
+          <span class="key">Ctrl</span><span class="plus">+</span><span class="key">Alt</span><span class="plus">+</span><span class="key">S</span>
+          <span class="plus" style="margin:0 10px;">/</span>
+          <span class="key">⌥</span><span class="plus">+</span><span class="key">S</span>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top:32px;">
+        <div class="eyebrow"><span class="icon" data-icon="theme"></span> Theme</div>
+        <p style="color:var(--ink-dim); max-width:60ch;">Toggle Light/Dark from the footer bar, or pick a mode explicitly in Settings. Every icon is a hand‑built inline SVG, no emoji, fully theme‑aware.</p>
+        <div class="theme-row">
+          <div class="theme-chip"><i class="light"></i> Light</div>
+          <div class="theme-chip"><i class="dark"></i> Dark</div>
+          <div class="theme-chip"><i class="auto"></i> Auto - matches system</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INSTALL ================= -->
+  <section id="install">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="icon" data-icon="download"></span> Install</div>
+      <h2 class="reveal" style="font-size:clamp(1.7rem,3vw,2.3rem);">Five steps, no Chrome Web Store review to wait on.</h2>
+      <ol class="steps reveal">
+        <li><b>Download</b><p>Grab the latest zip from the <span class="mono">Releases</span> page, or clone the repo.</p></li>
+        <li><b>Unzip</b><p>Extract it anywhere - no build step, it's plain HTML/CSS/JS.</p></li>
+        <li><b>Enable developer mode</b><p>Open <span class="mono">chrome://extensions</span> and flip the toggle, top right.</p></li>
+        <li><b>Load unpacked</b><p>Click <span class="mono">Load unpacked</span> and select the extracted folder.</p></li>
+        <li><b>Open the panel</b><p>Click the extension icon, or press <span class="mono">Ctrl+Alt+S</span>.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="final">
+    <div class="wrap">
+      <h2 class="reveal">Give your sidebar something to do.</h2>
+      <p class="reveal">Free, open source, and it never leaves your machine. No account, no telemetry, no Chrome Web Store account required to try it today.</p>
+      <div class="hero-ctas reveal">
+        <a class="btn btn-primary" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener"><span class="icon" data-icon="download"></span> Download v1.7.1</a>
+        <a class="btn btn-ghost" href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener"><span class="icon" data-icon="github"></span> Star on GitHub</a>
+        <a class="btn btn-ghost" href="https://ko-fi.com/janvranka" target="_blank" rel="noopener"><span class="icon" data-icon="heart"></span> Support on Ko-fi</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <div class="foot-brand">
+        <span class="mark"><svg width="18" height="18" viewBox="0 0 24 24"><rect width="24" height="24" rx="6.5" fill="var(--accent)"/><rect x="4.5" y="4.5" width="7" height="15" rx="2.2" fill="var(--accent-ink)"/></svg></span>
+        Sidebar Hub - a Chrome side panel extension
+      </div>
+      <div class="foot-links">
+        <a href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener">GitHub repo</a>
+        <a href="https://github.com/JanVranka05/smart-sidebar-hub/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/JanVranka05/smart-sidebar-hub/issues/new" target="_blank" rel="noopener">Report an issue</a>
+        <a href="https://ko-fi.com/janvranka" target="_blank" rel="noopener">Ko-fi</a>
+      </div>
+    </div>
+    <p class="foot-license mono">Licensed CC BY‑NC‑SA 4.0 - free to use, modify, and share for non‑commercial purposes, with attribution.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var ICONS = {
+    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/></svg>',
+    tabs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/></svg>',
+    downloads: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><polyline points="7 10 12 15 17 10"/><line x1="4" y1="19" x2="20" y2="19"/></svg>',
+    pins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+    translate: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg>',
+    notes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>',
+    closed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 15 15"/><path d="M4 8V4H8"/></svg>',
+    clipboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2" width="6" height="3" rx="1"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="9" y1="18" x2="13" y2="18"/></svg>',
+    spotify: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="17" r="3"/><circle cx="18" cy="15" r="3"/><path d="M11 17V5l10-2v12"/></svg>',
+    tidy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/></svg>',
+    collapse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 8 12 3 17 8"/><polyline points="7 16 12 21 17 16"/></svg>',
+    camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+    pauseall: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="5" width="3" height="14" rx="1"/><rect x="14" y="5" width="3" height="14" rx="1"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="5" width="3" height="14" rx="1"/><rect x="14" y="5" width="3" height="14" rx="1"/></svg>',
+    copyurls: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1.5"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>',
+    freeze: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="4.5" y1="6" x2="19.5" y2="18"/><line x1="19.5" y1="6" x2="4.5" y2="18"/><path d="M12 2l-2 2m2-2l2 2M12 22l-2-2m2 2l2-2M4.5 6l.5 2.7M4.5 6l2.7-.5M19.5 6l-.5 2.7M19.5 6l-2.7-.5M4.5 18l.5-2.7M4.5 18l2.7.5M19.5 18l-.5-2.7M19.5 18l-2.7.5"/></svg>',
+    settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="18" r="2"/></svg>',
+    theme: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" stroke="none"/></svg>',
+    group: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a1 1 0 0 1 1-1h4l2 2h8a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6z"/></svg>',
+    ungroup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>',
+    refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><polyline points="20 4 20 9 15 9"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/></svg>',
+    download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><polyline points="7 10 12 15 17 10"/><line x1="4" y1="19" x2="20" y2="19"/></svg>',
+    github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49 0-.24-.01-1.03-.01-1.87-2.78.61-3.37-1.21-3.37-1.21-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.57 2.34 1.12 2.91.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.32.1-2.75 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 2.5-.35c.85 0 1.71.12 2.5.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.43.2 2.49.1 2.75.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2z"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.2-4.5-9.9-9C.3 8.4 1.8 4.8 5.1 4c2-.5 4 .3 5.1 2 .3.5.6 1 .8 1.5.2-.5.5-1 .8-1.5 1.1-1.7 3.1-2.5 5.1-2 3.3.8 4.8 4.4 3 8-2.7 4.5-9.9 9-9.9 9z"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 11 14 9 22 21 10 13 10 13 2"/></svg>',
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+    back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>',
+    fwd: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>',
+    wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="10" x2="5" y2="14"/><line x1="9" y1="6" x2="9" y2="18"/><line x1="13" y1="9" x2="13" y2="15"/><line x1="17" y1="4" x2="17" y2="20"/><line x1="21" y1="8" x2="21" y2="16"/></svg>',
+    mute: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 9 8 9 12 5 12 19 8 15 4 15 4 9"/><line x1="17" y1="9" x2="22" y2="14"/><line x1="22" y1="9" x2="17" y2="14"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="19 5 9 12 19 19"/><rect x="5" y="5" width="2.4" height="14"/></svg>',
+    next: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 5 15 12 5 19"/><rect x="16.6" y="5" width="2.4" height="14"/></svg>'
+  };
+  document.querySelectorAll('[data-icon]').forEach(function(el){
+    var k = el.getAttribute('data-icon');
+    if (ICONS[k]) el.innerHTML = ICONS[k];
+  });
+
+  document.querySelectorAll('.rail-btn[data-goto]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = document.getElementById(btn.getAttribute('data-goto'));
+      if (target) target.scrollIntoView({behavior: 'smooth', block: 'start'});
+    });
+  });
+
+  var themeBtn = document.getElementById('theme-toggle');
+  var themeModes = ['auto', 'light', 'dark'];
+  var themeIdx = 0;
+  function applyTheme(mode){
+    if (mode === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', mode);
+    themeBtn.title = 'Theme: ' + mode + ' (click to change)';
+  }
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function(){
+      themeIdx = (themeIdx + 1) % themeModes.length;
+      applyTheme(themeModes[themeIdx]);
+    });
+  }
+
+  var sections = Array.from(document.querySelectorAll('.rail-btn[data-goto]')).map(function(b){
+    return { btn: b, el: document.getElementById(b.getAttribute('data-goto')) };
+  }).filter(function(s){ return s.el; });
+
+  if ('IntersectionObserver' in window) {
+    var navObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var match = sections.find(function(s){ return s.el === entry.target; });
+        if (match && entry.isIntersecting) {
+          sections.forEach(function(s){ s.btn.classList.remove('active'); });
+          match.btn.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    sections.forEach(function(s){ navObs.observe(s.el); });
+
+    var revealObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) { entry.target.classList.add('in-view'); revealObs.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in-view'); });
+  }
+})();
+</script>
+</body>
+</html>

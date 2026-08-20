@@ -4,7 +4,7 @@ A quick-access Chrome sidebar for open tabs, downloads, pinned links, translatio
 
 ## 📦 Download
 
-[**Download Smart Sidebar Hub v1.7.0**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
+[**Download Smart Sidebar Hub v1.7.1**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
 
 The zip contains the ready-to-load extension folder — no build step needed.
 
