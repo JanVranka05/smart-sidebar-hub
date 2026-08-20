@@ -12,7 +12,7 @@
     <button class="tabbtn" data-panel="translate" title="Translate">🌐</button>
     <button class="tabbtn" data-panel="notes" title="Notes">📝</button>
     <button class="tabbtn" data-panel="closed" title="Recently Closed">🕘</button>
-    <button class="tabbtn" data-panel="tabswitcher" title="Tabs">🗂️</button>
+    <button class="tabbtn" data-panel="group" title="Group Tabs">🗂️</button>
   </nav>
 
   <main class="content">
@@ -52,11 +52,12 @@
       <ul id="closed-list" class="list"></ul>
     </section>
 
-    <section id="panel-tabswitcher" class="panel">
+    <section id="panel-group" class="panel">
       <header class="panel-header">
-        <input type="search" id="tabswitcher-search" placeholder="Search open tabs…" />
+        <button id="group-run" class="btn-primary">🗂️ Group tabs by site</button>
+        <button id="group-undo" class="btn-icon" title="Ungroup all">↩️</button>
       </header>
-      <ul id="tabswitcher-list" class="list"></ul>
+      <ul id="group-list" class="list"></ul>
     </section>
   </main>
 

@@ -3,9 +3,9 @@ import * as pins from "./pins.js";
 import * as translate from "./translate.js";
 import * as notes from "./notes.js";
 import * as closed from "./closed.js";
-import * as tabswitcher from "./tabswitcher.js";
+import * as group from "./group.js";
 
-const modules = { downloads, pins, translate, notes, closed, tabswitcher };
+const modules = { downloads, pins, translate, notes, closed, group };
 const initialized = new Set();
 
 const tabbar = document.getElementById("tabbar");

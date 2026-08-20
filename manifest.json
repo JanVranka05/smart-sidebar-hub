@@ -3,7 +3,7 @@
   "name": "Sidebar Hub",
   "version": "1.0.0",
   "description": "A quick-access sidebar for downloads, pinned links, translation, notes, recently closed tabs, and a tab switcher.",
-  "permissions": ["downloads", "storage", "tabs", "sessions", "scripting", "sidePanel"],
+  "permissions": ["downloads", "storage", "tabs", "tabGroups", "sessions", "scripting", "sidePanel"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "background": {
     "service_worker": "background.js"
