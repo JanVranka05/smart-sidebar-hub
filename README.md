@@ -29,7 +29,7 @@ The zip contains the ready-to-load extension folder — no build step needed.
 
 ## Keyboard shortcut
 
-Open the sidebar with **Ctrl+Shift+U** (**Cmd+Shift+U** on Mac). Rebind it anytime at `chrome://extensions/shortcuts`.
+Open the sidebar with **Alt+S**. Rebind it anytime at `chrome://extensions/shortcuts`.
 
 ## Theme
 

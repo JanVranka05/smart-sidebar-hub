@@ -117,7 +117,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3 { font-family: "Bricolage Grotesque", "Manrope", sans-serif; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "Manrope", sans-serif; text-wrap: balance; margin: 0; letter-spacing: -0.01em; line-height: 1.08; }
   p { margin: 0; }
   a { color: inherit; }
 
@@ -714,7 +714,7 @@
               <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">"ship the v1.7.1 zip by Friday"</span></div>
               <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">https://github.com/JanVranka05/smart-sidebar-hub</span></div>
               <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">4f46e5</span></div>
-              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">Ctrl+Alt+S to rebind</span></div>
+              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">Alt+S to rebind</span></div>
             </div>
           </div>
         </div>
@@ -824,7 +824,7 @@
         <li><b>Unzip</b><p>Extract it anywhere - no build step, it's plain HTML/CSS/JS.</p></li>
         <li><b>Enable developer mode</b><p>Open <span class="mono">chrome://extensions</span> and flip the toggle, top right.</p></li>
         <li><b>Load unpacked</b><p>Click <span class="mono">Load unpacked</span> and select the extracted folder.</p></li>
-        <li><b>Open the panel</b><p>Click the extension icon, or press <span class="mono">Ctrl+Alt+S</span>.</p></li>
+        <li><b>Open the panel</b><p>Click the extension icon, or press <span class="mono">Alt+S</span>.</p></li>
       </ol>
     </div>
   </section>
@@ -865,7 +865,7 @@
 <script>
 (function(){
   var ICONS = {
-    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/></svg>',
+    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
     tabs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/></svg>',
     downloads: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><polyline points="7 10 12 15 17 10"/><line x1="4" y1="19" x2="20" y2="19"/></svg>',
     pins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
