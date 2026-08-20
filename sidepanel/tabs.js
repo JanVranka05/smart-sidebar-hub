@@ -1,4 +1,5 @@
 import { el, faviconFor, debounce } from "./util.js";
+import { iconEl } from "./icons.js";
 import { groupTabsBySite, ungroupAll } from "./group.js";
 
 const list = document.getElementById("tabs-list");
@@ -44,7 +45,7 @@ function renderGroupHeader(group) {
 
 function renderPinnedHeader() {
   const header = el("li", "group-header");
-  header.appendChild(el("span", null, "📌"));
+  header.appendChild(iconEl("pin", 12));
   header.appendChild(el("span", null, "Pinned"));
   return header;
 }
@@ -67,7 +68,9 @@ function renderTabRow(tab, indented) {
   row.appendChild(main);
 
   if (tab.audible || tab.mutedInfo?.muted) {
-    row.appendChild(el("span", "row-action", tab.mutedInfo?.muted ? "🔇" : "🔊"));
+    const indicator = iconEl(tab.mutedInfo?.muted ? "mute" : "volume", 13);
+    indicator.classList.add("row-action");
+    row.appendChild(indicator);
   }
 
   row.addEventListener("click", () => focusTab(tab));

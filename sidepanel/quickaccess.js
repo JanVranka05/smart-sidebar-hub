@@ -1,9 +1,13 @@
 import { el, faviconFor, getStorage } from "./util.js";
 
 const box = document.getElementById("quickaccess-widget");
+const WIDGETS_KEY = "enabledWidgets";
 
 export const STORAGE_KEY = "quickAccess";
 export const MAX_SLOTS = 2;
+
+let enabled = true;
+let lastItems = [];
 
 async function openOrFocus(item) {
   const [existing] = await chrome.tabs.query({ url: item.url });
@@ -15,8 +19,11 @@ async function openOrFocus(item) {
   }
 }
 
-function render(rawItems) {
+function render(rawItems = lastItems) {
+  lastItems = rawItems;
   box.innerHTML = "";
+  if (!enabled) return;
+
   const items = (rawItems || []).filter(Boolean);
   if (items.length === 0) return;
 
@@ -37,11 +44,15 @@ function render(rawItems) {
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes[STORAGE_KEY]) {
-    render(changes[STORAGE_KEY].newValue || []);
+  if (area !== "local") return;
+  if (changes[STORAGE_KEY]) render(changes[STORAGE_KEY].newValue || []);
+  if (changes[WIDGETS_KEY]) {
+    enabled = (changes[WIDGETS_KEY].newValue || {}).quickaccess !== false;
+    render();
   }
 });
 
 export async function init() {
+  enabled = ((await getStorage(WIDGETS_KEY, {})) || {}).quickaccess !== false;
   render(await getStorage(STORAGE_KEY, []));
 }

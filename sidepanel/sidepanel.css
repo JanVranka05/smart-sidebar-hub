@@ -101,7 +101,9 @@ body {
   padding: 11px 0;
   background: none;
   border: none;
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   opacity: 0.5;
   border-bottom: 2px solid transparent;
@@ -150,6 +152,102 @@ body {
   flex: 1;
 }
 
+.settings-section {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 10px 12px;
+}
+
+.settings-section .panel-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.settings-section .toggle-row:hover,
+.settings-section .row:hover {
+  background: var(--bg);
+}
+
+.settings-subblock {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 8px;
+}
+
+.settings-subblock + .settings-subblock {
+  border-top: 1px solid var(--border);
+}
+
+.settings-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.settings-connect-row {
+  display: flex;
+  gap: 6px;
+}
+
+.settings-connect-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.settings-connect-row .btn-primary {
+  flex-shrink: 0;
+}
+
+.spotify-player-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spotify-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.spotify-controls .row-action {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  opacity: 1;
+  padding: 0;
+}
+
+.spotify-controls .row-action:hover {
+  background: var(--border);
+}
+
+.spotify-controls .spotify-toggle-btn {
+  width: 44px;
+  height: 44px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.spotify-controls .spotify-toggle-btn:hover {
+  filter: brightness(1.08);
+  background: var(--accent);
+}
+
 input[type="search"], select {
   flex: 1;
   padding: 6px 8px;
@@ -193,7 +291,26 @@ textarea {
   cursor: pointer;
   font-size: 14px;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+
+.icon,
+.icon-wrap {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.icon-wrap {
+  align-items: center;
+  justify-content: center;
+}
+
+.row-icon.icon-wrap {
+  color: var(--text-dim);
 }
 
 .btn-icon:hover {
@@ -319,13 +436,15 @@ textarea {
   padding: 2px 8px 4px;
 }
 
-#nowplaying-widget.now-playing {
+#nowplaying-widget.now-playing,
+#spotify-widget.now-playing {
   background: var(--bg-alt);
   border-bottom: 1px solid var(--border);
   padding: 6px 8px;
 }
 
-#nowplaying-widget .row {
+#nowplaying-widget .row,
+#spotify-widget .row {
   background: var(--bg);
   border: 1px solid var(--border);
 }
@@ -352,6 +471,12 @@ textarea {
 
 .toggle-row:hover {
   background: var(--bg-alt);
+}
+
+.toggle-row.toggle-row-indent {
+  padding-left: 30px;
+  font-size: 12px;
+  color: var(--text-dim);
 }
 
 .toggle-row input {
@@ -484,6 +609,25 @@ textarea {
 [data-tooltip]:hover::after {
   opacity: 1;
   transform: translateX(-50%) translateY(6px);
+}
+
+[data-tooltip]:first-child::after {
+  left: 0;
+  transform: translateX(0) translateY(2px);
+}
+
+[data-tooltip]:first-child:hover::after {
+  transform: translateX(0) translateY(6px);
+}
+
+[data-tooltip]:last-child::after {
+  left: auto;
+  right: 0;
+  transform: translateX(0) translateY(2px);
+}
+
+[data-tooltip]:last-child:hover::after {
+  transform: translateX(0) translateY(6px);
 }
 
 .list::-webkit-scrollbar,

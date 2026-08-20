@@ -6,6 +6,7 @@ export const PANEL_LABELS = {
   notes: "Notes",
   closed: "Recently Closed",
   clipboard: "Clipboard History",
+  spotify: "Spotify",
 };
 
 export const QUICK_ACTION_LABELS = {
@@ -14,7 +15,9 @@ export const QUICK_ACTION_LABELS = {
   screenshot: "Screenshot current tab",
   pauseall: "Pause all playing media",
   copyurls: "Copy all tab URLs",
+  freeze: "Freeze all background tabs",
 };
+
 
 export function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -30,6 +33,13 @@ export function faviconFor(url) {
   } catch {
     return "";
   }
+}
+
+export function formatDuration(ms) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
 export function relativeTime(ms) {

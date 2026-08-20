@@ -1,4 +1,5 @@
 import { el, relativeTime, formatBytes, debounce } from "./util.js";
+import { iconEl } from "./icons.js";
 
 const list = document.getElementById("downloads-list");
 const search = document.getElementById("downloads-search");
@@ -46,10 +47,8 @@ function render() {
       });
     }
 
-    const icon = el("span", "row-icon", "📄");
-    icon.style.display = "flex";
-    icon.style.alignItems = "center";
-    icon.style.justifyContent = "center";
+    const icon = iconEl("file", 16);
+    icon.classList.add("row-icon");
 
     const main = el("div", "row-main");
     main.appendChild(el("div", "row-title", basename(item.filename) || item.url));
@@ -75,7 +74,8 @@ function render() {
     row.appendChild(icon);
     row.appendChild(main);
 
-    const showBtn = el("button", "row-action", "📂");
+    const showBtn = el("button", "row-action");
+    showBtn.appendChild(iconEl("folder", 14));
     showBtn.title = "Show in folder";
     showBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -83,7 +83,8 @@ function render() {
     });
     row.appendChild(showBtn);
 
-    const removeBtn = el("button", "row-action", "✕");
+    const removeBtn = el("button", "row-action");
+    removeBtn.appendChild(iconEl("close", 14));
     removeBtn.title = "Remove from list";
     removeBtn.addEventListener("click", (e) => {
       e.stopPropagation();

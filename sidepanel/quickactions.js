@@ -1,4 +1,5 @@
 import { getStorage } from "./util.js";
+import { iconHTML } from "./icons.js";
 import { tidyTabs } from "./group.js";
 import { loadDirectoryHandle, ensurePermission, writeFile } from "./screenshotFolder.js";
 
@@ -8,28 +9,29 @@ const buttons = {
   screenshot: document.getElementById("qa-screenshot"),
   pauseall: document.getElementById("qa-pauseall"),
   copyurls: document.getElementById("qa-copyurls"),
+  freeze: document.getElementById("qa-freeze"),
 };
 
 const ACTIONS_KEY = "enabledQuickActions";
 
-function flash(btn, emoji) {
-  const original = btn.textContent;
-  btn.textContent = emoji;
-  setTimeout(() => (btn.textContent = original), 900);
+function flash(btn, iconName) {
+  const original = btn.innerHTML;
+  btn.innerHTML = iconHTML(iconName, 14);
+  setTimeout(() => (btn.innerHTML = original), 900);
 }
 
 function flashError(btn, error) {
   console.error("Quick action failed:", error);
   const originalTooltip = btn.dataset.tooltip;
   btn.dataset.tooltip = `Failed: ${error?.message || error}`;
-  flash(btn, "⚠️");
+  flash(btn, "alert");
   setTimeout(() => (btn.dataset.tooltip = originalTooltip), 5000);
 }
 
 buttons.tidy.addEventListener("click", async () => {
   try {
     await tidyTabs();
-    flash(buttons.tidy, "✅");
+    flash(buttons.tidy, "check");
   } catch (err) {
     flashError(buttons.tidy, err);
   }
@@ -71,7 +73,7 @@ buttons.screenshot.addEventListener("click", async () => {
       if (!downloadId) throw new Error(chrome.runtime.lastError?.message || "Download did not start");
     }
 
-    flash(buttons.screenshot, "✅");
+    flash(buttons.screenshot, "check");
   } catch (err) {
     flashError(buttons.screenshot, err);
   }
@@ -92,7 +94,7 @@ buttons.pauseall.addEventListener("click", async () => {
         .catch(() => {})
     )
   );
-  flash(buttons.pauseall, "✅");
+  flash(buttons.pauseall, "check");
 });
 
 buttons.copyurls.addEventListener("click", async () => {
@@ -100,9 +102,20 @@ buttons.copyurls.addEventListener("click", async () => {
   const text = tabs.map((t) => t.url).filter(Boolean).join("\n");
   try {
     await navigator.clipboard.writeText(text);
-    flash(buttons.copyurls, "✅");
+    flash(buttons.copyurls, "check");
   } catch (err) {
     flashError(buttons.copyurls, err);
+  }
+});
+
+buttons.freeze.addEventListener("click", async () => {
+  try {
+    const tabs = await chrome.tabs.query({});
+    const candidates = tabs.filter((t) => !t.active && !t.pinned && !t.discarded && !t.audible);
+    await Promise.all(candidates.map((t) => chrome.tabs.discard(t.id).catch(() => {})));
+    flash(buttons.freeze, "check");
+  } catch (err) {
+    flashError(buttons.freeze, err);
   }
 });
 

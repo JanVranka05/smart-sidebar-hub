@@ -1,4 +1,5 @@
 import { el, faviconFor, getStorage, setStorage } from "./util.js";
+import { iconEl } from "./icons.js";
 
 const list = document.getElementById("pins-list");
 const addBtn = document.getElementById("pins-add");
@@ -29,7 +30,8 @@ function render() {
     row.appendChild(icon);
     row.appendChild(main);
 
-    const removeBtn = el("button", "row-action", "✕");
+    const removeBtn = el("button", "row-action");
+    removeBtn.appendChild(iconEl("close", 14));
     removeBtn.title = "Remove pin";
     removeBtn.addEventListener("click", async (e) => {
       e.stopPropagation();

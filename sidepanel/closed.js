@@ -1,4 +1,5 @@
 import { el, faviconFor, relativeTime } from "./util.js";
+import { iconEl } from "./icons.js";
 
 const list = document.getElementById("closed-list");
 const refreshBtn = document.getElementById("closed-refresh");
@@ -23,14 +24,14 @@ function render(sessions) {
     const row = el("li", "row");
     row.title = url;
 
-    const icon = isWindow ? el("span", "row-icon", "🗔") : el("img", "row-icon");
-    if (!isWindow) {
+    let icon;
+    if (isWindow) {
+      icon = iconEl("tabs", 14);
+      icon.classList.add("row-icon");
+    } else {
+      icon = el("img", "row-icon");
       icon.src = entry.favIconUrl || faviconFor(url);
       icon.onerror = () => (icon.style.visibility = "hidden");
-    } else {
-      icon.style.display = "flex";
-      icon.style.alignItems = "center";
-      icon.style.justifyContent = "center";
     }
 
     const main = el("div", "row-main");

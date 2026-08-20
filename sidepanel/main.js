@@ -5,13 +5,15 @@ import * as translate from "./translate.js";
 import * as notes from "./notes.js";
 import * as closed from "./closed.js";
 import * as clipboard from "./clipboard.js";
+import * as spotify from "./spotify.js";
 import * as settings from "./settings.js";
 import * as nowplaying from "./nowplaying.js";
+import * as spotifyWidget from "./spotifyWidget.js";
 import * as quickaccess from "./quickaccess.js";
 import * as quickactions from "./quickactions.js";
 import * as theme from "./theme.js";
 
-const modules = { tabs, downloads, pins, translate, notes, closed, clipboard, settings };
+const modules = { tabs, downloads, pins, translate, notes, closed, clipboard, spotify, settings };
 const initialized = new Set();
 
 const tabbar = document.getElementById("tabbar");
@@ -20,6 +22,7 @@ const ACTIVE_KEY = "activePanel";
 const ENABLED_KEY = settings.PANELS_KEY;
 
 let currentPanel = null;
+let previousPanel = null;
 
 function activate(name) {
   currentPanel = name;
@@ -54,7 +57,14 @@ for (const btn of buttons) {
   btn.addEventListener("click", () => activate(btn.dataset.panel));
 }
 
-document.getElementById("footer-settings").addEventListener("click", () => activate("settings"));
+document.getElementById("footer-settings").addEventListener("click", () => {
+  if (currentPanel === "settings") {
+    activate(previousPanel || "tabs");
+  } else {
+    previousPanel = currentPanel;
+    activate("settings");
+  }
+});
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes[ENABLED_KEY]) {
@@ -64,6 +74,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 theme.init();
 nowplaying.init();
+spotifyWidget.init();
 quickaccess.init();
 quickactions.init();
 

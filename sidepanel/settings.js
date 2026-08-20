@@ -1,9 +1,13 @@
 import { el, PANEL_LABELS, QUICK_ACTION_LABELS, faviconFor, getStorage, setStorage } from "./util.js";
+import { iconEl, iconHTML } from "./icons.js";
 import { STORAGE_KEY as QUICKACCESS_KEY, MAX_SLOTS } from "./quickaccess.js";
 import { chooseDirectory, loadDirectoryHandle } from "./screenshotFolder.js";
+import { CLIENT_ID_KEY, getRedirectUri, isConnected, connect, disconnect } from "./spotifyAuth.js";
+import { refreshSpotifyPanel } from "./spotify.js";
 
 const sectionsList = document.getElementById("settings-sections");
 const actionsList = document.getElementById("settings-actions");
+const widgetsList = document.getElementById("settings-widgets");
 const quickAccessList = document.getElementById("settings-quickaccess");
 const appearanceBtn = document.getElementById("settings-appearance");
 const versionLabel = document.getElementById("settings-version");
@@ -13,36 +17,67 @@ const screenshotDownloadsOpts = document.getElementById("settings-screenshot-dow
 const screenshotCustomOpts = document.getElementById("settings-screenshot-custom-opts");
 const screenshotChooseBtn = document.getElementById("settings-screenshot-choose");
 const screenshotCustomLabel = document.getElementById("settings-screenshot-custom-label");
+const spotifyRedirectCopyBtn = document.getElementById("spotify-redirect-copy");
+const spotifyClientIdInput = document.getElementById("settings-spotify-clientid");
+const spotifyConnectBtn = document.getElementById("settings-spotify-connect");
+const spotifyStatusLabel = document.getElementById("settings-spotify-status");
 
 export const PANELS_KEY = "enabledPanels";
 export const ACTIONS_KEY = "enabledQuickActions";
+export const WIDGETS_KEY = "enabledWidgets";
 export const SCREENSHOT_KEY = "screenshotSettings";
+
+function makeToggleRow(storageKey, id, label, checked, indent) {
+  const row = el("li", indent ? "toggle-row toggle-row-indent" : "toggle-row");
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = checked;
+  checkbox.id = `toggle-${storageKey}-${id}`;
+  checkbox.addEventListener("change", async () => {
+    const current = await getStorage(storageKey, {});
+    current[id] = checkbox.checked;
+    await setStorage(storageKey, current);
+  });
+
+  const labelEl = document.createElement("label");
+  labelEl.htmlFor = checkbox.id;
+  labelEl.textContent = label;
+
+  row.appendChild(checkbox);
+  row.appendChild(labelEl);
+  return row;
+}
 
 function renderToggleList(container, labels, storageKey) {
   container.innerHTML = "";
   getStorage(storageKey, {}).then((enabled) => {
     for (const [id, label] of Object.entries(labels)) {
-      const row = el("li", "toggle-row");
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = enabled[id] !== false;
-      checkbox.id = `toggle-${storageKey}-${id}`;
-      checkbox.addEventListener("change", async () => {
-        const current = await getStorage(storageKey, {});
-        current[id] = checkbox.checked;
-        await setStorage(storageKey, current);
-      });
-
-      const labelEl = document.createElement("label");
-      labelEl.htmlFor = checkbox.id;
-      labelEl.textContent = label;
-
-      row.appendChild(checkbox);
-      row.appendChild(labelEl);
-      container.appendChild(row);
+      container.appendChild(makeToggleRow(storageKey, id, label, enabled[id] !== false, false));
     }
   });
+}
+
+const WIDGET_TREE = [
+  {
+    id: "nowplaying",
+    label: "Now Playing widget",
+    children: [{ id: "nowplayingProgress", label: "Show progress bar (can cause lag)" }],
+  },
+  { id: "spotify", label: "Spotify widget" },
+  { id: "quickaccess", label: "Quick Access chips" },
+];
+
+async function renderWidgetsList() {
+  widgetsList.innerHTML = "";
+  const enabled = await getStorage(WIDGETS_KEY, {});
+
+  for (const item of WIDGET_TREE) {
+    widgetsList.appendChild(makeToggleRow(WIDGETS_KEY, item.id, item.label, enabled[item.id] !== false, false));
+    for (const child of item.children || []) {
+      widgetsList.appendChild(makeToggleRow(WIDGETS_KEY, child.id, child.label, enabled[child.id] !== false, true));
+    }
+  }
 }
 
 async function renderQuickAccess() {
@@ -68,7 +103,8 @@ async function renderQuickAccess() {
       row.appendChild(main);
     }
 
-    const setBtn = el("button", "row-action", "📍");
+    const setBtn = el("button", "row-action");
+    setBtn.appendChild(iconEl("pin", 14));
     setBtn.title = "Set to current tab";
     setBtn.addEventListener("click", async (e) => {
       e.stopPropagation();
@@ -82,7 +118,8 @@ async function renderQuickAccess() {
     row.appendChild(setBtn);
 
     if (item) {
-      const clearBtn = el("button", "row-action", "✕");
+      const clearBtn = el("button", "row-action");
+      clearBtn.appendChild(iconEl("close", 14));
       clearBtn.title = "Clear slot";
       clearBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
@@ -147,10 +184,52 @@ async function initScreenshotSettings() {
   });
 }
 
+async function refreshSpotifyStatus() {
+  const connected = await isConnected();
+  spotifyStatusLabel.innerHTML = connected ? `${iconHTML("check", 12)} Connected` : "Not connected";
+  spotifyConnectBtn.textContent = connected ? "Disconnect" : "Connect";
+}
+
+async function initSpotifySettings() {
+  spotifyRedirectCopyBtn.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(getRedirectUri());
+    const original = spotifyRedirectCopyBtn.innerHTML;
+    spotifyRedirectCopyBtn.innerHTML = `${iconHTML("check", 14)} Copied!`;
+    setTimeout(() => (spotifyRedirectCopyBtn.innerHTML = original), 1200);
+  });
+  spotifyClientIdInput.value = await getStorage(CLIENT_ID_KEY, "");
+  await refreshSpotifyStatus();
+
+  spotifyConnectBtn.addEventListener("click", async () => {
+    if (await isConnected()) {
+      await disconnect();
+      await refreshSpotifyStatus();
+      refreshSpotifyPanel();
+      return;
+    }
+
+    const clientId = spotifyClientIdInput.value.trim();
+    if (!clientId) {
+      alert("Paste your Spotify app's Client ID first.");
+      return;
+    }
+
+    try {
+      await connect(clientId);
+      await refreshSpotifyStatus();
+      refreshSpotifyPanel();
+    } catch (err) {
+      alert(`Spotify connection failed: ${err.message}`);
+    }
+  });
+}
+
 export async function init() {
   renderToggleList(sectionsList, PANEL_LABELS, PANELS_KEY);
   renderToggleList(actionsList, QUICK_ACTION_LABELS, ACTIONS_KEY);
+  await renderWidgetsList();
   await renderQuickAccess();
   await initScreenshotSettings();
+  await initSpotifySettings();
   versionLabel.textContent = `Smart Sidebar Hub v${chrome.runtime.getManifest().version}`;
 }

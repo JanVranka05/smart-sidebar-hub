@@ -1,11 +1,12 @@
 import { getStorage, setStorage } from "./util.js";
+import { iconHTML } from "./icons.js";
 
 const btn = document.getElementById("footer-theme");
 const select = document.getElementById("settings-theme");
 
 export const STORAGE_KEY = "theme";
 
-const ICONS = { auto: "🌓", light: "☀️", dark: "🌙" };
+const ICON_NAMES = { auto: "themeAuto", light: "themeLight", dark: "themeDark" };
 
 function apply(theme) {
   if (theme === "light" || theme === "dark") {
@@ -13,7 +14,7 @@ function apply(theme) {
   } else {
     document.documentElement.removeAttribute("data-theme");
   }
-  btn.textContent = ICONS[theme] || ICONS.auto;
+  btn.innerHTML = iconHTML(ICON_NAMES[theme] || ICON_NAMES.auto, 16);
   btn.dataset.tooltip = `Theme: ${theme} (click to change)`;
   if (select) select.value = theme;
 }

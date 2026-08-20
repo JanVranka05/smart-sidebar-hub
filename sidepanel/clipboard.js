@@ -1,4 +1,5 @@
 import { el, relativeTime, getStorage, setStorage } from "./util.js";
+import { iconEl } from "./icons.js";
 
 const list = document.getElementById("clipboard-list");
 const clearBtn = document.getElementById("clipboard-clear");
@@ -31,7 +32,8 @@ function render(entries) {
     main.appendChild(el("div", "row-sub", `${hostnameOf(entry.url)} · ${relativeTime(entry.ts)}`));
     row.appendChild(main);
 
-    const removeBtn = el("button", "row-action", "✕");
+    const removeBtn = el("button", "row-action");
+    removeBtn.appendChild(iconEl("close", 14));
     removeBtn.title = "Remove";
     removeBtn.addEventListener("click", async (e) => {
       e.stopPropagation();

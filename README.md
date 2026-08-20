@@ -1,10 +1,10 @@
 # Smart Sidebar Hub
 
-A quick-access Chrome sidebar for open tabs, downloads, pinned links, translation, notes, recently closed tabs, clipboard history, and quick-access favorites.
+A quick-access Chrome sidebar for open tabs, downloads, pinned links, translation, notes, recently closed tabs, clipboard history, quick-access favorites, and Spotify control.
 
 ## 📦 Download
 
-[**Download Smart Sidebar Hub v1.5.8**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
+[**Download Smart Sidebar Hub v1.7.0**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
 
 The zip contains the ready-to-load extension folder — no build step needed.
 
@@ -18,10 +18,12 @@ The zip contains the ready-to-load extension folder — no build step needed.
 - **Notes** — a persistent scratchpad, auto-saved as you type
 - **Recently closed** — restore closed tabs/windows with one click
 - **Clipboard history** — anything you copy on any page shows up here, click to re-copy it
-- **Now Playing widget** — always-visible, shows whichever tab is (or was recently) playing audio, with pause and mute controls
+- **Now Playing widget** — always-visible, shows whichever tab is (or was recently) playing audio, with a live progress bar, pause, and mute controls
+- **Spotify** — see what's playing, control playback, and browse playlists, both as a persistent widget and a full panel. See [SPOTIFY_SETUP.md](SPOTIFY_SETUP.md) to connect your account
 - **Quick Access** — 2 pinned shortcut chips (Arc-style) for instant access to your two most-used pages
-- **Quick Actions bar** — Tidy tabs (group + reorder), collapse/expand groups, screenshot the current tab, pause all playing media, copy all tab URLs — each individually toggleable
-- **Settings panel** — show/hide any section or quick action, pick your screenshot save location (including any folder on disk, not just Downloads), and switch themes
+- **Quick Actions bar** — Tidy tabs (group + reorder), collapse/expand groups, screenshot the current tab, pause all playing media, freeze all background tabs, copy all tab URLs — each individually toggleable
+- **Settings panel** — show/hide any section, quick action, or widget, pick your screenshot save location (including any folder on disk, not just Downloads), and switch themes
+- **Custom icon set** — every icon in the UI is a hand-built inline SVG, no emoji, fully theme-aware
 
 ## Keyboard shortcut
 
@@ -57,7 +59,7 @@ The extension is plain HTML/CSS/JS, no build step required.
 - `manifest.json` — extension manifest (Manifest V3)
 - `background.js` — service worker (handles clipboard capture messages)
 - `content/` — content script that captures text you copy on any page
-- `sidepanel/` — side panel UI and all feature scripts
+- `sidepanel/` — side panel UI and all feature scripts (`icons.js` holds the inline SVG icon set, `spotify*.js` handle the Spotify integration)
 - `icons/` — extension icons
 
 Reload the extension from `chrome://extensions` after making changes.
