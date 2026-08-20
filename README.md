@@ -2,6 +2,8 @@
 
 A quick-access Chrome sidebar for open tabs, downloads, pinned links, translation, notes, recently closed tabs, clipboard history, quick-access favorites, and Spotify control.
 
+[![Support on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/janvranka)
+
 ## 📦 Download
 
 [**Download Smart Sidebar Hub v1.7.1**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
