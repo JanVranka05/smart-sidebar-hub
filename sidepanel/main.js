@@ -11,7 +11,9 @@ import * as nowplaying from "./nowplaying.js";
 import * as spotifyWidget from "./spotifyWidget.js";
 import * as quickaccess from "./quickaccess.js";
 import * as quickactions from "./quickactions.js";
+import * as commandsearch from "./commandsearch.js";
 import * as theme from "./theme.js";
+import * as tooltip from "./tooltip.js";
 
 const modules = { tabs, downloads, pins, translate, notes, closed, clipboard, spotify, settings };
 const initialized = new Set();
@@ -24,7 +26,7 @@ const ENABLED_KEY = settings.PANELS_KEY;
 let currentPanel = null;
 let previousPanel = null;
 
-function activate(name) {
+export function activate(name) {
   currentPanel = name;
   for (const btn of buttons) {
     btn.classList.toggle("active", btn.dataset.panel === name);
@@ -73,10 +75,12 @@ chrome.storage.onChanged.addListener((changes, area) => {
 });
 
 theme.init();
+tooltip.init();
 nowplaying.init();
 spotifyWidget.init();
 quickaccess.init();
 quickactions.init();
+commandsearch.init();
 
 Promise.all([
   chrome.storage.local.get(ACTIVE_KEY),

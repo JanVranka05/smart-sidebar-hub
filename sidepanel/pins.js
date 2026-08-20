@@ -49,21 +49,33 @@ function render() {
   }
 }
 
-addBtn.addEventListener("click", async () => {
+export async function addCurrentTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab || !tab.url) return;
+  if (!tab || !tab.url) return { ok: false, reason: "No active tab found" };
 
-  if (pins.some((p) => p.url === tab.url)) return;
+  const current = await getStorage(STORAGE_KEY, []);
+  if (current.some((p) => p.url === tab.url)) return { ok: false, reason: "Already pinned" };
 
-  pins.unshift({
+  current.unshift({
     id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
     title: tab.title || tab.url,
     url: tab.url,
     favIconUrl: tab.favIconUrl || "",
   });
 
-  await setStorage(STORAGE_KEY, pins);
+  await setStorage(STORAGE_KEY, current);
+  pins = current;
   render();
+  return { ok: true };
+}
+
+addBtn.addEventListener("click", () => addCurrentTab());
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes[STORAGE_KEY]) {
+    pins = changes[STORAGE_KEY].newValue || [];
+    render();
+  }
 });
 
 export async function init() {

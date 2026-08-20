@@ -75,6 +75,44 @@ body {
   border-color: var(--accent);
 }
 
+.command-search {
+  position: relative;
+  display: flex;
+  padding: 7px 8px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.command-search-results {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.command-search-results.open {
+  display: flex;
+}
+
+.command-search-results .row.active {
+  background: var(--bg-alt);
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
 .tabbar {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -591,7 +629,7 @@ textarea {
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(2px);
+  transform: translateX(calc(-50% + var(--tooltip-shift, 0px))) translateY(2px);
   background: var(--text);
   color: var(--bg);
   font-size: 11px;
@@ -608,52 +646,17 @@ textarea {
 
 [data-tooltip]:hover::after {
   opacity: 1;
-  transform: translateX(-50%) translateY(6px);
-}
-
-[data-tooltip]:first-child::after {
-  left: 0;
-  transform: translateX(0) translateY(2px);
-}
-
-[data-tooltip]:first-child:hover::after {
-  transform: translateX(0) translateY(6px);
-}
-
-[data-tooltip]:last-child::after {
-  left: auto;
-  right: 0;
-  transform: translateX(0) translateY(2px);
-}
-
-[data-tooltip]:last-child:hover::after {
-  transform: translateX(0) translateY(6px);
+  transform: translateX(calc(-50% + var(--tooltip-shift, 0px))) translateY(6px);
 }
 
 #bottombar [data-tooltip]::after {
   top: auto;
   bottom: 100%;
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateX(calc(-50% + var(--tooltip-shift, 0px))) translateY(-2px);
 }
 
 #bottombar [data-tooltip]:hover::after {
-  transform: translateX(-50%) translateY(-6px);
-}
-
-#bottombar [data-tooltip]:first-child::after {
-  transform: translateX(0) translateY(-2px);
-}
-
-#bottombar [data-tooltip]:first-child:hover::after {
-  transform: translateX(0) translateY(-6px);
-}
-
-#bottombar [data-tooltip]:last-child::after {
-  transform: translateX(0) translateY(-2px);
-}
-
-#bottombar [data-tooltip]:last-child:hover::after {
-  transform: translateX(0) translateY(-6px);
+  transform: translateX(calc(-50% + var(--tooltip-shift, 0px))) translateY(-6px);
 }
 
 .list::-webkit-scrollbar,

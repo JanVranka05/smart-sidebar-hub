@@ -13,12 +13,18 @@
   <div id="spotify-widget" class="now-playing"></div>
 
   <div class="quickbar" id="quickbar">
+    <button id="qa-pin" class="btn-icon" data-tooltip="Pin current tab" aria-label="Pin current tab"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></button>
     <button id="qa-tidy" class="btn-icon" data-tooltip="Tidy: group tabs by site, groups left / individuals right" aria-label="Tidy tabs"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/></svg></button>
     <button id="qa-collapse" class="btn-icon" data-tooltip="Collapse/expand all tab groups" aria-label="Collapse/expand all tab groups"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 8 12 3 17 8"/><polyline points="7 16 12 21 17 16"/></svg></button>
     <button id="qa-screenshot" class="btn-icon" data-tooltip="Screenshot current tab (not available on chrome:// pages)" aria-label="Screenshot current tab"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
     <button id="qa-pauseall" class="btn-icon" data-tooltip="Pause all playing media" aria-label="Pause all playing media"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="5" width="3" height="14" rx="1"/><rect x="14" y="5" width="3" height="14" rx="1"/></svg></button>
     <button id="qa-copyurls" class="btn-icon" data-tooltip="Copy all tab URLs" aria-label="Copy all tab URLs"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1.5"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg></button>
-    <button id="qa-freeze" class="btn-icon" data-tooltip="Freeze all background tabs (saves memory)" aria-label="Freeze all background tabs"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="4.5" y1="6" x2="19.5" y2="18"/><line x1="19.5" y1="6" x2="4.5" y2="18"/><path d="M12 2l-2 2m2-2l2 2M12 22l-2-2m2 2l2-2M4.5 6l.5 2.7M4.5 6l2.7-.5M19.5 6l-.5 2.7M19.5 6l-2.7-.5M4.5 18l.5-2.7M4.5 18l2.7.5M19.5 18l-.5-2.7M19.5 18l-2.7.5"/></svg></button>
+    <button id="qa-freeze" class="btn-icon" data-tooltip="Freeze all background tabs (saves memory)" aria-label="Freeze all background tabs"><svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="4.2" y1="7.5" x2="19.8" y2="16.5"/><line x1="19.8" y1="7.5" x2="4.2" y2="16.5"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="17.1" y1="6.8" x2="19.1" y2="10.2"/><line x1="4.9" y1="13.8" x2="6.9" y2="17.2"/><line x1="17.1" y1="17.2" x2="19.1" y2="13.8"/><line x1="6.9" y1="6.8" x2="4.9" y2="10.2"/></svg></button>
+  </div>
+
+  <div class="command-search" id="command-search">
+    <input type="search" id="command-search-input" placeholder="Search everything… (Ctrl/Cmd+K)" />
+    <ul id="command-search-results" class="command-search-results"></ul>
   </div>
 
   <nav class="tabbar" id="tabbar">
@@ -104,13 +110,13 @@
 
     <section id="panel-settings" class="panel panel-scroll">
       <div class="settings-section">
-        <div class="panel-title">Sections</div>
-        <ul id="settings-sections" class="toggle-list"></ul>
+        <div class="panel-title">Quick actions</div>
+        <ul id="settings-actions" class="toggle-list"></ul>
       </div>
 
       <div class="settings-section">
-        <div class="panel-title">Quick actions</div>
-        <ul id="settings-actions" class="toggle-list"></ul>
+        <div class="panel-title">Sections</div>
+        <ul id="settings-sections" class="toggle-list"></ul>
       </div>
 
       <div class="settings-section">

@@ -10,6 +10,7 @@ export const PANEL_LABELS = {
 };
 
 export const QUICK_ACTION_LABELS = {
+  pin: "Pin current tab",
   tidy: "Tidy tabs",
   collapse: "Collapse/expand groups",
   screenshot: "Screenshot current tab",

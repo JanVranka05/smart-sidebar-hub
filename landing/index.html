@@ -177,7 +177,23 @@
     border-bottom: 1px solid var(--border-soft);
   }
   .topbar .name { font-weight: 700; font-size: 15px; }
-  .topbar .ver { font-size: 11px; color: var(--ink-faint); padding: 2px 7px; border: 1px solid var(--border); border-radius: 99px; }
+  .topbar .ver {
+    font-size: 11px; color: var(--ink-faint); padding: 2px 9px 2px 7px; border: 1px solid var(--border); border-radius: 99px;
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .topbar .ver:hover { border-color: var(--accent); color: var(--ink-dim); }
+  .ver-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+    animation: ver-pulse 2s ease-out infinite;
+  }
+  @keyframes ver-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+    70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
   .theme-toggle {
     width: 30px; height: 30px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
@@ -495,12 +511,15 @@
     <svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" rx="6.5" fill="var(--accent)"/><rect x="4.5" y="4.5" width="7" height="15" rx="2.2" fill="var(--accent-ink)"/></svg>
   </span>
   <span class="name">Sidebar Hub</span>
-  <span class="ver mono">v1.7.1</span>
+  <a class="ver mono" id="version-badge" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener" title="Latest release on GitHub">
+    <span class="ver-dot" aria-hidden="true"></span><span id="version-text">v1.8.1</span>
+  </a>
   <button class="theme-toggle" id="theme-toggle" type="button" title="Theme: auto (click to change)" aria-label="Toggle theme"><span class="icon" data-icon="theme"></span></button>
   <div class="topbar-spacer"></div>
   <div class="topbar-links">
     <a class="hide-sm" href="#tabs">Features</a>
     <a class="hide-sm" href="#install">Install</a>
+    <a class="hide-sm" href="https://docs.sidebarhub.com/" target="_blank" rel="noopener">Docs</a>
     <a href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener">GitHub</a>
     <a class="hide-sm" href="https://ko-fi.com/janvranka" target="_blank" rel="noopener">Ko&#8209;fi</a>
     <a class="btn btn-primary btn-sm" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener">Download</a>
@@ -514,9 +533,9 @@
     <div class="wrap hero-grid">
       <div class="eyebrow"><span class="icon" data-icon="bolt"></span> Chrome side panel &middot; Manifest V3</div>
       <h1>One sidebar. Every tab you opened, closed, downloaded, or copied.</h1>
-      <p class="lede">Sidebar Hub keeps open tabs, downloads, pinned links, notes, clipboard history, translation, and Spotify in a single Chrome side panel - open it with a keystroke, gone just as fast.</p>
+      <p class="lede"><b style="color:var(--ink);">Bring your Vivaldi and Arc experience to Chrome.</b> Sidebar Hub keeps open tabs, downloads, pinned links, notes, clipboard history, translation, and Spotify in a single Chrome side panel - open it with a keystroke, gone just as fast.</p>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener"><span class="icon" data-icon="download"></span> Download v1.7.1</a>
+        <a class="btn btn-primary" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener"><span class="icon" data-icon="download"></span> Download v1.8.1</a>
         <a class="btn btn-ghost" href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener"><span class="icon" data-icon="github"></span> View source</a>
       </div>
       <p class="hero-note">No build step, no account, no tracking. Unzip, <span class="mono">Load unpacked</span>, done. &nbsp;·&nbsp; Free for non‑commercial use, CC BY‑NC‑SA 4.0.</p>
@@ -526,6 +545,7 @@
         <div class="stat"><b>6</b><span>one‑click quick actions</span></div>
         <div class="stat"><b>2</b><span>Arc‑style quick access slots</span></div>
         <div class="stat"><b>0</b><span>build step required</span></div>
+        <div class="stat"><b>Free</b><span>forever, no catch</span></div>
       </div>
 
       <div class="hero-stage reveal">
@@ -653,7 +673,7 @@
             <div class="sp-content" style="padding:14px;">
               <div class="sp-search"><span class="icon" data-icon="search"></span> Search downloads…</div>
               <div class="sp-row"><span class="fav" style="background:#f59e0b;border-radius:4px;"></span><span class="tt">quarterly-report.pdf</span><span class="sub">2.1 MB</span></div>
-              <div class="sp-row"><span class="fav" style="background:#3b82f6;border-radius:4px;"></span><span class="tt">sidebar-hub-v1.7.1.zip</span><span class="sub">340 KB</span></div>
+              <div class="sp-row"><span class="fav" style="background:#3b82f6;border-radius:4px;"></span><span class="tt">sidebar-hub-v1.8.1.zip</span><span class="sub">340 KB</span></div>
               <div class="sp-row"><span class="fav" style="background:#22c55e;border-radius:4px;"></span><span class="tt">screenshot-2026-08-19.png</span><span class="sub">880 KB</span></div>
               <div class="sp-row"><span class="fav" style="background:#a855f7;border-radius:4px;"></span><span class="tt">playlist-export.csv</span><span class="sub">12 KB</span></div>
             </div>
@@ -711,7 +731,7 @@
         <div class="shot"><span class="shot-label">CLIPBOARD PANEL</span>
           <div class="mini-sp">
             <div class="sp-content" style="padding:14px;">
-              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">"ship the v1.7.1 zip by Friday"</span></div>
+              <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">"ship the v1.8.1 zip by Friday"</span></div>
               <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">https://github.com/JanVranka05/smart-sidebar-hub</span></div>
               <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">4f46e5</span></div>
               <div class="sp-row" style="align-items:flex-start"><span class="fav" style="background:var(--accent-soft);margin-top:2px"></span><span class="tt" style="white-space:normal">Alt+S to rebind</span></div>
@@ -819,6 +839,7 @@
     <div class="wrap">
       <div class="eyebrow reveal"><span class="icon" data-icon="download"></span> Install</div>
       <h2 class="reveal" style="font-size:clamp(1.7rem,3vw,2.3rem);">Five steps, no Chrome Web Store review to wait on.</h2>
+      <p class="reveal" style="color:var(--ink-dim); max-width:60ch; margin-top:16px; font-size:1.02rem;">Free today, free forever - no account, no upsell, no future price tag.</p>
       <ol class="steps reveal">
         <li><b>Download</b><p>Grab the latest zip from the <span class="mono">Releases</span> page, or clone the repo.</p></li>
         <li><b>Unzip</b><p>Extract it anywhere - no build step, it's plain HTML/CSS/JS.</p></li>
@@ -833,9 +854,9 @@
   <section class="final">
     <div class="wrap">
       <h2 class="reveal">Give your sidebar something to do.</h2>
-      <p class="reveal">Free, open source, and it never leaves your machine. No account, no telemetry, no Chrome Web Store account required to try it today.</p>
+      <p class="reveal">Free forever, open source, and it never leaves your machine. No account, no telemetry, no Chrome Web Store account required to try it today.</p>
       <div class="hero-ctas reveal">
-        <a class="btn btn-primary" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener"><span class="icon" data-icon="download"></span> Download v1.7.1</a>
+        <a class="btn btn-primary" href="https://github.com/JanVranka05/smart-sidebar-hub/releases/latest" target="_blank" rel="noopener"><span class="icon" data-icon="download"></span> Download v1.8.1</a>
         <a class="btn btn-ghost" href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener"><span class="icon" data-icon="github"></span> Star on GitHub</a>
         <a class="btn btn-ghost" href="https://ko-fi.com/janvranka" target="_blank" rel="noopener"><span class="icon" data-icon="heart"></span> Support on Ko-fi</a>
       </div>
@@ -852,13 +873,14 @@
         Sidebar Hub - a Chrome side panel extension
       </div>
       <div class="foot-links">
+        <a href="https://docs.sidebarhub.com/" target="_blank" rel="noopener">Docs</a>
         <a href="https://github.com/JanVranka05/smart-sidebar-hub" target="_blank" rel="noopener">GitHub repo</a>
         <a href="https://github.com/JanVranka05/smart-sidebar-hub/releases" target="_blank" rel="noopener">Releases</a>
         <a href="https://github.com/JanVranka05/smart-sidebar-hub/issues/new" target="_blank" rel="noopener">Report an issue</a>
         <a href="https://ko-fi.com/janvranka" target="_blank" rel="noopener">Ko-fi</a>
       </div>
     </div>
-    <p class="foot-license mono">Licensed CC BY‑NC‑SA 4.0 - free to use, modify, and share for non‑commercial purposes, with attribution.</p>
+    <p class="foot-license mono">Licensed CC BY‑NC‑SA 4.0 - free to use, modify, and share for non‑commercial purposes, with attribution. Free forever, no strings attached.</p>
   </div>
 </footer>
 
@@ -904,6 +926,18 @@
     var k = el.getAttribute('data-icon');
     if (ICONS[k]) el.innerHTML = ICONS[k];
   });
+
+  var versionText = document.getElementById('version-text');
+  if (versionText) {
+    fetch('https://api.github.com/repos/JanVranka05/smart-sidebar-hub/releases/latest')
+      .then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(data){
+        if (data && data.tag_name) {
+          versionText.textContent = /^v/i.test(data.tag_name) ? data.tag_name : 'v' + data.tag_name;
+        }
+      })
+      .catch(function(){ /* keep static fallback version */ });
+  }
 
   document.querySelectorAll('.rail-btn[data-goto]').forEach(function(btn){
     btn.addEventListener('click', function(){

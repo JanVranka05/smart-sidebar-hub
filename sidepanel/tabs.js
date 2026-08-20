@@ -29,7 +29,7 @@ function matches(tab) {
   return (tab.title || "").toLowerCase().includes(q) || (tab.url || "").toLowerCase().includes(q);
 }
 
-async function focusTab(tab) {
+export async function focusTab(tab) {
   await chrome.windows.update(tab.windowId, { focused: true });
   await chrome.tabs.update(tab.id, { active: true });
 }

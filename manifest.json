@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Sidebar Hub",
-  "version": "1.7.1",
+  "version": "1.8.1",
   "description": "A quick-access sidebar for open tabs, downloads, pinned links, translation, notes, recently closed tabs, clipboard history, quick access favorites, and Spotify control.",
   "permissions": ["downloads", "storage", "tabs", "tabGroups", "sessions", "scripting", "sidePanel", "clipboardWrite", "identity"],
   "host_permissions": ["http://*/*", "https://*/*", "<all_urls>"],

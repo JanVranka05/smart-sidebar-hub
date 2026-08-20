@@ -2,8 +2,10 @@ import { getStorage } from "./util.js";
 import { iconHTML } from "./icons.js";
 import { tidyTabs } from "./group.js";
 import { loadDirectoryHandle, ensurePermission, writeFile } from "./screenshotFolder.js";
+import { addCurrentTab } from "./pins.js";
 
 const buttons = {
+  pin: document.getElementById("qa-pin"),
   tidy: document.getElementById("qa-tidy"),
   collapse: document.getElementById("qa-collapse"),
   screenshot: document.getElementById("qa-screenshot"),
@@ -27,6 +29,16 @@ function flashError(btn, error) {
   flash(btn, "alert");
   setTimeout(() => (btn.dataset.tooltip = originalTooltip), 5000);
 }
+
+buttons.pin.addEventListener("click", async () => {
+  try {
+    const result = await addCurrentTab();
+    if (!result.ok) throw new Error(result.reason || "Could not pin tab");
+    flash(buttons.pin, "check");
+  } catch (err) {
+    flashError(buttons.pin, err);
+  }
+});
 
 buttons.tidy.addEventListener("click", async () => {
   try {

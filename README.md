@@ -6,7 +6,7 @@ A quick-access Chrome sidebar for open tabs, downloads, pinned links, translatio
 
 ## 📦 Download
 
-[**Download Smart Sidebar Hub v1.7.1**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
+[**Download Smart Sidebar Hub v1.8.1**](https://github.com/JanVranka05/smart-sidebar-hub/releases/latest)
 
 The zip contains the ready-to-load extension folder — no build step needed.
 
@@ -23,7 +23,8 @@ The zip contains the ready-to-load extension folder — no build step needed.
 - **Now Playing widget** — always-visible, shows whichever tab is (or was recently) playing audio, with a live progress bar, pause, and mute controls
 - **Spotify** — see what's playing, control playback, and browse playlists, both as a persistent widget and a full panel. See [SPOTIFY_SETUP.md](SPOTIFY_SETUP.md) to connect your account
 - **Quick Access** — 2 pinned shortcut chips (Arc-style) for instant access to your two most-used pages
-- **Quick Actions bar** — Tidy tabs (group + reorder), collapse/expand groups, screenshot the current tab, pause all playing media, freeze all background tabs, copy all tab URLs — each individually toggleable
+- **Quick Actions bar** — Pin current tab, tidy tabs (group + reorder), collapse/expand groups, screenshot the current tab, pause all playing media, freeze all background tabs, copy all tab URLs — each individually toggleable
+- **Command Search** — one search bar (Ctrl/Cmd+K to focus) that searches everything at once: open tabs, downloads, pins, quick access, recently closed, clipboard history, and notes, plus jump-to-section and run-quick-action commands. Arrow keys + Enter to navigate
 - **Settings panel** — show/hide any section, quick action, or widget, pick your screenshot save location (including any folder on disk, not just Downloads), and switch themes
 - **Custom icon set** — every icon in the UI is a hand-built inline SVG, no emoji, fully theme-aware
 

@@ -3,7 +3,7 @@ const ICONS = {
   collapse: '<polyline points="7 8 12 3 17 8"/><polyline points="7 16 12 21 17 16"/>',
   camera: '<path d="M4 8h3l2-2h6l2 2h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
   pause: '<rect x="7" y="5" width="3" height="14" rx="1"/><rect x="14" y="5" width="3" height="14" rx="1"/>',
-  freeze: '<line x1="12" y1="2" x2="12" y2="22"/><line x1="4.5" y1="6" x2="19.5" y2="18"/><line x1="19.5" y1="6" x2="4.5" y2="18"/><path d="M12 2l-2 2m2-2l2 2M12 22l-2-2m2 2l2-2M4.5 6l.5 2.7M4.5 6l2.7-.5M19.5 6l-.5 2.7M19.5 6l-2.7-.5M4.5 18l.5-2.7M4.5 18l2.7.5M19.5 18l-.5-2.7M19.5 18l-2.7.5"/>',
+  freeze: '<line x1="12" y1="3" x2="12" y2="21"/><line x1="4.2" y1="7.5" x2="19.8" y2="16.5"/><line x1="19.8" y1="7.5" x2="4.2" y2="16.5"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="17.1" y1="6.8" x2="19.1" y2="10.2"/><line x1="4.9" y1="13.8" x2="6.9" y2="17.2"/><line x1="17.1" y1="17.2" x2="19.1" y2="13.8"/><line x1="6.9" y1="6.8" x2="4.9" y2="10.2"/>',
   copy: '<rect x="9" y="9" width="11" height="11" rx="1.5"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/>',
   settings: '<line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="18" r="2"/>',
   themeAuto: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" stroke="none"/>',
