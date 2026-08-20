@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sidebar Hub</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <nav class="tabbar" id="tabbar">
+    <button class="tabbtn" data-panel="downloads" title="Downloads">⬇️</button>
+    <button class="tabbtn" data-panel="pins" title="Pins">📌</button>
+    <button class="tabbtn" data-panel="translate" title="Translate">🌐</button>
+    <button class="tabbtn" data-panel="notes" title="Notes">📝</button>
+    <button class="tabbtn" data-panel="closed" title="Recently Closed">🕘</button>
+    <button class="tabbtn" data-panel="tabswitcher" title="Tabs">🗂️</button>
+  </nav>
+
+  <main class="content">
+    <section id="panel-downloads" class="panel">
+      <header class="panel-header">
+        <input type="search" id="downloads-search" placeholder="Search downloads…" />
+        <button id="downloads-clear" class="btn-icon" title="Clear all history">🗑️</button>
+      </header>
+      <ul id="downloads-list" class="list"></ul>
+    </section>
+
+    <section id="panel-pins" class="panel">
+      <header class="panel-header">
+        <button id="pins-add" class="btn-primary">📌 Pin current tab</button>
+      </header>
+      <ul id="pins-list" class="list"></ul>
+    </section>
+
+    <section id="panel-translate" class="panel">
+      <header class="panel-header">
+        <select id="translate-lang"></select>
+        <button id="translate-getselection" class="btn-icon" title="Get selected text from page">📋</button>
+      </header>
+      <textarea id="translate-text" placeholder="Type or paste text, or grab the page selection…"></textarea>
+      <button id="translate-go" class="btn-primary">Translate →</button>
+    </section>
+
+    <section id="panel-notes" class="panel">
+      <textarea id="notes-text" placeholder="Jot something down… (auto-saved)"></textarea>
+    </section>
+
+    <section id="panel-closed" class="panel">
+      <header class="panel-header">
+        <span class="panel-title">Recently closed</span>
+        <button id="closed-refresh" class="btn-icon" title="Refresh">🔄</button>
+      </header>
+      <ul id="closed-list" class="list"></ul>
+    </section>
+
+    <section id="panel-tabswitcher" class="panel">
+      <header class="panel-header">
+        <input type="search" id="tabswitcher-search" placeholder="Search open tabs…" />
+      </header>
+      <ul id="tabswitcher-list" class="list"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
